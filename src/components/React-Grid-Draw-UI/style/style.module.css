@@ -1,0 +1,101 @@
+.page-container {
+    text-align: center;
+    font-family: Calibri, Arial, "Times New Roman", roboto, serif;
+}
+
+.meta-data {
+    font-weight: bold;
+}
+
+.row-container {
+    display: block;
+}
+
+.generated-table-container {
+    background-color: whitesmoke;
+    border-radius: 1%;
+    z-index: 10;
+    display: block;
+    width: 100%;
+}
+
+.canvas-wrap {
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.generated-table-container > div {
+    color: black;
+    text-align: justify;
+}
+
+canvas {
+    z-index: 10000;
+    width: inherit;
+    position: absolute;
+}
+
+.table-container {
+    margin: 10vh auto;
+    width: 90%;
+}
+
+.table-container > tbody > tr > td {
+    padding: 0.5em;
+}
+
+.sidenav {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    align-content: flex-end;
+    justify-content: end;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    grid-gap: 10px;
+}
+
+.sidenav a {
+    position: relative;
+    right: -80px;
+    transition: 0.3s;
+    padding: 15px;
+    width: 100px;
+    text-decoration: none;
+    font-size: 20px;
+    color: white;
+    border-radius: 3px;
+    top: 0;
+}
+
+.sidenav a:hover {
+    right: 0;
+}
+
+.undo {
+    top: 80px;
+    background-color: #2196F3;
+}
+
+.copy {
+    top: 20px;
+    background-color: #4CAF50;
+}
+
+.modal-wrapper {
+    position: fixed;
+    z-index: 10000;
+}
+
+.modal-title-container {
+    text-align: center;
+    padding: 2em;
+}
+
+.modal-title {
+    font-family: RobCalibri, Arial, "Times New Roman", roboto, serif;
+    color: black;
+}
