@@ -10,7 +10,7 @@ export const ReactGridDrawUI: FunctionComponent = (): ReactElement => {
 
 	useEffect(() => {
 		createCanvas();
-	});
+	}, []);
 
 	const buildTable = () => {
 		let grid: string[][] = getItemsWithinRegion();
@@ -64,13 +64,12 @@ export const ReactGridDrawUI: FunctionComponent = (): ReactElement => {
 	return (
 		<Fragment>
 			<div className={style["page-container"]}>
-				<hr/>
 				<div className={style["sidenav"]}>
 					<a className={style["copy"]} onClick={() => openModal()}>Copy</a>
 					<a className={style["undo"]} onClick={() => undoLastDrawnLine()}>Undo</a>
 				</div>
 				<div id="canvas-wrap" className={style["canvas-wrap"]}>
-					<div className={style["generated-table-container"]} id={"generated-table-container"}/>
+					<div className={style["drawable-container"]} id={"drawable-container"}/>
 					<canvas id="canvas"/>
 				</div>
 			</div>

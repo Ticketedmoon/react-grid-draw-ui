@@ -4,7 +4,9 @@ import {ReactGridDrawUI} from "./components/React-Grid-Draw-UI";
 
 const App: React.FunctionComponent = () => {
     return (
-        <ReactGridDrawUI/>
+        <div>
+            <ReactGridDrawUI/>
+        </div>
     )
 };
 

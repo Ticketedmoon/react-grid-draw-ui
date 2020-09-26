@@ -1,5 +1,3 @@
-// NOTE: webpack watch options has a poll setting, do not include this if you are using webpack-dev-server
-// Polling dramatically influences the cpu usage.
 module.exports = (mode) => {
     return {
         mode: mode || "development", // Default to development if nothing passed
@@ -32,6 +30,28 @@ module.exports = (mode) => {
                     use: {
                         loader: "babel-loader"
                     }
+                },
+                {
+                    test: /\.module.css$/i,
+                    use: [
+                        {
+                            loader: 'style-loader',
+                        },
+                        {
+                            loader: "css-loader",
+                            options: {
+                                sourceMap: true,
+                                importLoaders: 2,
+                                modules: {
+                                    localIdentName: "[name]_[local]_[hash:base64:5]",
+                                },
+                            }
+                        }],
+                    exclude: /(node_modules)/,
+                },
+                {
+                    test: /^((?!\.module).)*css$/i,
+                    use: ['style-loader', 'css-loader'],
                 },
             ]
         }

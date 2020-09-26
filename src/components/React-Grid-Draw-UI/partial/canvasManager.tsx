@@ -21,7 +21,7 @@ let undoLineList: boolean[] = [];
 
 export const createCanvas = () => {
 	canvas = document.getElementById('canvas');
-	body = document.getElementById("generated-table-container");
+	body = document.getElementById("drawable-container");
 	ctx = canvas.getContext('2d');
 	rect = {};
 	canvas.addEventListener('mousedown', mouseDown, false);
@@ -249,7 +249,7 @@ const buildTableFromBox = (totalCols: number, totalRows: number) => {
 };
 
 export const getItemsWithinRegion = () => {
-	let parentItem = document.getElementById("generated-table-container");
+	let parentItem = document.getElementById("drawable-container");
 
 	horizontalPointsSelected.sort(function(a, b) {
 		return a.startY - b.startY;
@@ -277,7 +277,7 @@ export const getItemsWithinRegion = () => {
 						horizontalPointsSelected, verticalPointsSelected);
 					let gridRowPos: number = gridPosition[0];
 					let gridColPos: number = gridPosition[1];
-					tableRows[gridRowPos][gridColPos] += item.innerText + " ";
+					tableRows[gridRowPos][gridColPos] = tableRows[gridRowPos][gridColPos] != "" ? tableRows[gridRowPos][gridColPos] + " " + item.innerText : item.innerText;
 				}
 			}
 		}
