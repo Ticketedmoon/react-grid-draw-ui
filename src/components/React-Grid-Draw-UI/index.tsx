@@ -1,19 +1,25 @@
-import React, {Fragment, FunctionComponent, ReactElement, useEffect, useState} from "react";
-import {createCanvas, getItemsWithinRegion, resetBoxProperties, undoLastDrawnLine} from "./partial/canvasManager";
+import React, {Fragment, FunctionComponent, PropsWithChildren, ReactElement, useEffect, useState} from "react";
 import HyperModal from 'react-hyper-modal';
+import {CanvasManager} from "./partial/canvasManager";
 
 const style = require("./style/style.module.css");
 
-export const ReactGridDrawUI: FunctionComponent = ({children}): ReactElement => {
+export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalProperties> = (props: PropsWithChildren<ReactGridDrawLineOptionalProperties>): ReactElement => {
 
 	const [isCopyModalOpen, setIsCopyModalOpen] = useState<boolean>(false);
+	const canvasManger: CanvasManager = new CanvasManager({
+		lineClickTolerance: props.lineClickTolerance as number,
+		selectCircleSize: props.selectCircleSize as number,
+		circleLineShiftSize: props.circleLineShiftSize as number,
+		contextLineWidth: props.contextLineWidth as number
+	});
 
 	useEffect(() => {
-		createCanvas();
+		canvasManger.createCanvas();
 	}, []);
 
 	const buildTable = () => {
-		let grid: string[][] = getItemsWithinRegion();
+		let grid: string[][] = canvasManger.getItemsWithinRegion();
 		let tbody = document.getElementById('tbody') as HTMLElement;
 		tbody.innerHTML = "";
 		for (let i = 0; i < grid.length; i++) {
@@ -25,7 +31,7 @@ export const ReactGridDrawUI: FunctionComponent = ({children}): ReactElement => 
 			tr += "</tr>";
 			tbody.innerHTML += tr;
 		}
-		resetBoxProperties(0, 0);
+		canvasManger.resetBoxProperties(0, 0);
 	}
 
 	const buildHtmlTableCellFromMapRow = (item: string) => {
@@ -66,10 +72,10 @@ export const ReactGridDrawUI: FunctionComponent = ({children}): ReactElement => 
 			<div className={style["page-container"]}>
 				<div className={style["sidenav"]}>
 					<a className={style["copy"]} onClick={() => openModal()}>Copy</a>
-					<a className={style["undo"]} onClick={() => undoLastDrawnLine()}>Undo</a>
+					<a className={style["undo"]} onClick={() => canvasManger.undoLastDrawnLine()}> Undo </a>
 				</div>
 				<div id="canvas-wrap" className={style["canvas-wrap"]}>
-					{children}
+					{props.children}
 					<canvas id="canvas"/>
 				</div>
 			</div>
@@ -93,3 +99,9 @@ export const ReactGridDrawUI: FunctionComponent = ({children}): ReactElement => 
 	);
 };
 
+ReactGridDrawUI.defaultProps = {
+	lineClickTolerance: 15,
+	selectCircleSize: 3,
+	circleLineShiftSize: 10,
+	contextLineWidth: 1
+}

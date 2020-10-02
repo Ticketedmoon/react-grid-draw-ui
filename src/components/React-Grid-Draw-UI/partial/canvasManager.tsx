@@ -1,327 +1,345 @@
-let canvas: any;
-let ctx: any;
-let rect: any;
-let drag: boolean;
-let body: HTMLElement | null;
+export class CanvasManager {
 
-const LINE_CLICK_TOLERANCE = 15;
-const SELECT_CIRCLE_SIZE = 3;
-const CIRCLE_LINE_SHIFT_SIZE = 10;
-const CONTEXT_LINE_WIDTH = 1;
+	canvas: any;
+	ctx: any;
+	rect: any;
+	drag: boolean = false;
+	body: HTMLElement | null = null;
 
-let boxStartX: number;
-let boxStartY: number;
-let boxW: number;
-let boxH: number
+	lineClickTolerance: number;
+	selectCircleSize: number;
+	circleLineShiftSize: number;
+	contextLineWidth: number
 
-let horizontalPointsSelected: HorizontalLineType[] = [];
-let verticalPointsSelected: VerticalLineType[] = [];
+	boxStartX: number = 0;
+	boxStartY: number = 0;
+	boxW: number = 0;
+	boxH: number = 0;
 
-let undoLineList: boolean[] = [];
+	horizontalPointsSelected: HorizontalLineType[] = [];
+	verticalPointsSelected: VerticalLineType[] = [];
 
-export const createCanvas = () => {
-	canvas = document.getElementById('canvas');
-	body = document.getElementById("drawable-container");
-	ctx = canvas.getContext('2d');
-	rect = {};
-	canvas.addEventListener('mousedown', mouseDown, false);
-	canvas.addEventListener('mouseup', mouseUp, false);
-	canvas.addEventListener('mousemove', mouseMove, false);
-	setCanvasSize();
-}
+	undoLineList: boolean[] = [];
 
-const setCanvasSize = () => {
-	if (body != null) {
-		canvas.width = body.offsetWidth;
-		canvas.height = body.offsetHeight;
+	constructor(lineProperties: ReactGridDrawLineRequiredProperties) {
+		this.lineClickTolerance = lineProperties.lineClickTolerance;
+		this.selectCircleSize = lineProperties.selectCircleSize;
+		this.circleLineShiftSize = lineProperties.circleLineShiftSize;
+		this.contextLineWidth = lineProperties.contextLineWidth;
 	}
-}
 
-export const resetBoxProperties = (pageX: number, pageY: number) => {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	resetBoxPosition(pageX, pageY);
-	rect.startX = pageX - canvas.offsetLeft;
-	rect.startY = pageY - canvas.offsetTop;
-	horizontalPointsSelected = [];
-	verticalPointsSelected = [];
-}
-
-const mouseDown = (e: any) => {
-	let startTop = rect.startY;
-	let startLeft = rect.startX;
-	let endBottom = boxH + startTop;
-	let endRight = boxW + startLeft;
-	let mouseX = e.pageX - canvas.offsetLeft;
-	let mouseY = e.pageY - canvas.offsetTop;
-
-	if (isMouseOnBoundaryOfBox(mouseX, startLeft, endRight, mouseY, startTop, endBottom)) {
-		drawLineAtClickedGridBoundaryPosition(e);
-	} else if (!isMouseClickInsideBoxRegion(e)) {
-		resetBoxProperties(e.pageX, e.pageY);
-		drag = true;
+	createCanvas = () => {
+		this.canvas = document.getElementById('canvas');
+		this.body = document.getElementById("drawable-container");
+		this.ctx = this.canvas.getContext('2d');
+		this.rect = {};
+		this.canvas.addEventListener('mousedown', this.mouseDown, false);
+		this.canvas.addEventListener('mouseup', this.mouseUp, false);
+		this.canvas.addEventListener('mousemove', this.mouseMove, false);
+		this.setCanvasSize();
 	}
-}
 
-const mouseUp = () => {
-	drag = false;
-}
-
-function isMouseOnBoundaryOfBox(mouseX: number, startLeft: number, endRight: number, mouseY: number, startTop: number, endBottom: number) {
-	let isTouchingBoundaryX = Math.abs(mouseX - startLeft) < LINE_CLICK_TOLERANCE || Math.abs(mouseX - endRight) < LINE_CLICK_TOLERANCE;
-	let isTouchingBoundaryY = Math.abs(mouseY - startTop) < LINE_CLICK_TOLERANCE || Math.abs(mouseY - endBottom) < LINE_CLICK_TOLERANCE;
-	return isTouchingBoundaryX || isTouchingBoundaryY;
-}
-
-const isMouseClickInsideBoxRegion = (e: any): boolean => {
-	let mouseX = Math.abs(parseInt(String(e.pageX - canvas.offsetLeft)));
-	let mouseY = Math.abs(parseInt(String(e.pageY - canvas.offsetTop)));
-	return mouseX >= rect.startX &&
-		mouseX <= rect.w + rect.startX &&
-		mouseY >= rect.startY &&
-		mouseY <= rect.h + rect.startY;
-}
-
-function drawRect(pageX: number, pageY: number, w: number, h: number) {
-	rect.w = (pageX - canvas.offsetLeft) - rect.startX;
-	rect.h = (pageY - canvas.offsetTop) - rect.startY;
-	ctx.strokeStyle = 'red';
-	ctx.lineWidth = CONTEXT_LINE_WIDTH;
-	ctx.strokeRect(rect.startX, rect.startY, w, h);
-}
-
-function drawLineAtClickedGridBoundaryPosition(e: any) {
-	let startTop = rect.startY;
-	let startLeft = rect.startX;
-	let endBottom = boxH + startTop;
-	let endRight = boxW + startLeft;
-	let mouseX = e.pageX - canvas.offsetLeft;
-	let mouseY = e.pageY - canvas.offsetTop;
-	let isTouchingBoundaryStartX = Math.abs(mouseX - startLeft) < LINE_CLICK_TOLERANCE;
-	let isTouchingBoundaryEndX = Math.abs(mouseX - endRight) < LINE_CLICK_TOLERANCE;
-	let isTouchingBoundaryStartY = Math.abs(mouseY - startTop) < LINE_CLICK_TOLERANCE;
-	let isTouchingBoundaryEndY = Math.abs(mouseY - endBottom) < LINE_CLICK_TOLERANCE;
-	if (isTouchingBoundaryStartX || isTouchingBoundaryEndX) {
-		let line: HorizontalLineType = {startX: startLeft, startY: getShiftRateFromMousePosition(mouseY), endX: endRight};
-		horizontalPointsSelected.push(line);
-		undoLineList.push(true);
-		drawLineFromBoxBoundaryX(line);
-	} else if (isTouchingBoundaryStartY || isTouchingBoundaryEndY) {
-		let line: VerticalLineType = {startX: getShiftRateFromMousePosition(mouseX), startY: startTop, endY: endBottom};
-		verticalPointsSelected.push(line);
-		drawLineFromBoxBoundaryY(line);
-		undoLineList.push(false);
-	}
-}
-
-const checkForCircleOnBoundary = (e: any) => {
-	let startTop = rect.startY;
-	let startLeft = rect.startX;
-	let endBottom = boxH + startTop;
-	let endRight = boxW + startLeft;
-	let mouseX = e.pageX - canvas.offsetLeft;
-	let mouseY = e.pageY - canvas.offsetTop;
-	let isTouchingBoundaryStartX = Math.abs(mouseX - startLeft) < LINE_CLICK_TOLERANCE;
-	let isTouchingBoundaryEndX = Math.abs(mouseX - endRight) < LINE_CLICK_TOLERANCE;
-	let isTouchingBoundaryStartY = Math.abs(mouseY - startTop) < LINE_CLICK_TOLERANCE;
-	let isTouchingBoundaryEndY = Math.abs(mouseY - endBottom) < LINE_CLICK_TOLERANCE;
-	if (isTouchingBoundaryStartX && mouseY > rect.startY && mouseY < rect.startY + rect.h) {
-		let shiftRateFromMousePosition = getShiftRateFromMousePosition(mouseY);
-		let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight};
-		drawSelectableCircleOnBoxBoundary(startLeft, shiftRateFromMousePosition);
-		drawLineFromBoxBoundaryX(line);
-	} else if (isTouchingBoundaryEndX && mouseY > rect.startY && mouseY < rect.startY + rect.h) {
-		let shiftRateFromMousePosition = getShiftRateFromMousePosition(mouseY);
-		let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight};
-		drawSelectableCircleOnBoxBoundary(endRight, shiftRateFromMousePosition);
-		drawLineFromBoxBoundaryX(line);
-	} else if (isTouchingBoundaryStartY && mouseX > rect.startX && mouseX < rect.startX + rect.w) {
-		let shiftRateFromMousePosition = getShiftRateFromMousePosition(mouseX);
-		let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: startTop, endY: endBottom};
-		drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, startTop);
-		drawLineFromBoxBoundaryY(line);
-	} else if (isTouchingBoundaryEndY && mouseX > rect.startX && mouseX < rect.startX + rect.w) {
-		let shiftRateFromMousePosition = getShiftRateFromMousePosition(mouseX);
-		let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: endBottom, endY: startTop};
-		drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, endBottom);
-		drawLineFromBoxBoundaryY(line);
-	}
-}
-
-const getShiftRateFromMousePosition = (mousePos: number) => {
-	return Math.round(mousePos / CIRCLE_LINE_SHIFT_SIZE) * CIRCLE_LINE_SHIFT_SIZE;
-}
-
-const resetBoxPosition = (pageX: number, pageY: number) => {
-	boxStartX = pageX;
-	boxStartY = pageY;
-	boxW = rect.w;
-	boxH = rect.h;
-}
-
-const mouseMove = (e: any) => {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	if (drag && body != null) {
-		resetBoxPosition(e.pageX, e.pageY);
-	} else if (!drag) {
-		let startTop = rect.startY;
-		let startLeft = rect.startX;
-		let endBottom = boxH + startTop;
-		let endRight = boxW + startLeft;
-		let mouseX = e.pageX - canvas.offsetLeft;
-		let mouseY = e.pageY - canvas.offsetTop;
-		if (isMouseOnBoundaryOfBox(mouseX, startLeft, endRight, mouseY, startTop, endBottom)) {
-			checkForCircleOnBoundary(e);
+	setCanvasSize = () => {
+		if (this.body != null) {
+			this.canvas.width = this.body.offsetWidth;
+			this.canvas.height = this.body.offsetHeight;
 		}
 	}
-	drawRect(boxStartX, boxStartY, boxW, boxH);
-	drawAllSelectedLines();
-}
 
-const drawAllSelectedLines = () => {
-	horizontalPointsSelected.forEach((line: HorizontalLineType) => {
-		drawLineFromBoxBoundaryX(line);
-	});
-
-	verticalPointsSelected.forEach((line: VerticalLineType) => {
-		drawLineFromBoxBoundaryY(line);
-	});
-}
-
-const drawSelectableCircleOnBoxBoundary = (mouseX: number, mouseY: number) => {
-	ctx.fillStyle = 'red';
-	ctx.beginPath();
-	ctx.arc(mouseX, mouseY, SELECT_CIRCLE_SIZE, 0, Math.PI * 2);
-	ctx.closePath();
-	ctx.fill();
-}
-
-const drawLineFromBoxBoundaryX = (line: HorizontalLineType) => {
-	ctx.fillStyle = 'red';
-	ctx.beginPath();
-	ctx.lineWidth = CONTEXT_LINE_WIDTH;
-	ctx.moveTo(line.startX, line.startY);
-	ctx.lineTo(line.endX, line.startY);
-	ctx.closePath();
-	ctx.stroke();
-}
-
-const drawLineFromBoxBoundaryY = (line: VerticalLineType) => {
-	ctx.fillStyle = 'red';
-	ctx.lineWidth = CONTEXT_LINE_WIDTH;
-	ctx.beginPath();
-	ctx.moveTo(line.startX, line.startY);
-	ctx.lineTo(line.startX, line.endY);
-	ctx.closePath();
-	ctx.stroke();
-}
-
-const isItemInsideBox = (xBoundary: number, yBoundary: number) => {
-	return xBoundary >= rect.startX &&
-		xBoundary <= rect.w + rect.startX &&
-		yBoundary >= rect.startY &&
-		yBoundary <= boxH + rect.startY;
-}
-
-export const undoLastDrawnLine = () => {
-	let isLastLineHorizontal = undoLineList.pop();
-	if (isLastLineHorizontal) {
-		horizontalPointsSelected.pop();
-	} else {
-		verticalPointsSelected.pop();
+	resetBoxProperties = (pageX: number, pageY: number) => {
+		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.resetBoxPosition(pageX, pageY);
+		this.rect.startX = pageX - this.canvas.offsetLeft;
+		this.rect.startY = pageY - this.canvas.offsetTop;
+		this.horizontalPointsSelected = [];
+		this.verticalPointsSelected = [];
 	}
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	drawRect(boxStartX, boxStartY, boxW, boxH);
-	drawAllSelectedLines();
-}
 
-const buildTableFromBox = (totalCols: number, totalRows: number) => {
-	let tableRows: string[][] = [];
-	for (let row = 0; row < totalRows + 1; row++) {
-		for (let col = 0; col < totalCols + 1; col++) {
-			if (tableRows[row] != undefined) {
-				tableRows[row].push("");
-			} else {
-				tableRows[row] = [""];
+	mouseDown = (e: any) => {
+		let startTop = this.rect.startY;
+		let startLeft = this.rect.startX;
+		let endBottom = this.boxH + startTop;
+		let endRight = this.boxW + startLeft;
+		let mouseX = e.pageX - this.canvas.offsetLeft;
+		let mouseY = e.pageY - this.canvas.offsetTop;
+
+		if (this.isMouseOnBoundaryOfBox(mouseX, startLeft, endRight, mouseY, startTop, endBottom)) {
+			this.drawLineAtClickedGridBoundaryPosition(e);
+		} else if (!this.isMouseClickInsideBoxRegion(e)) {
+			this.resetBoxProperties(e.pageX, e.pageY);
+			this.drag = true;
+		}
+	}
+
+	mouseUp = () => {
+		this.drag = false;
+	}
+
+	isMouseOnBoundaryOfBox(mouseX: number, startLeft: number, endRight: number, mouseY: number, startTop: number, endBottom: number) {
+		let isTouchingBoundaryX = Math.abs(mouseX - startLeft) < this.lineClickTolerance || Math.abs(mouseX - endRight) < this.lineClickTolerance;
+		let isTouchingBoundaryY = Math.abs(mouseY - startTop) < this.lineClickTolerance || Math.abs(mouseY - endBottom) < this.lineClickTolerance;
+		return isTouchingBoundaryX || isTouchingBoundaryY;
+	}
+
+	isMouseClickInsideBoxRegion = (e: any): boolean => {
+		let mouseX = Math.abs(parseInt(String(e.pageX - this.canvas.offsetLeft)));
+		let mouseY = Math.abs(parseInt(String(e.pageY - this.canvas.offsetTop)));
+		return mouseX >= this.rect.startX &&
+			mouseX <= this.rect.w + this.rect.startX &&
+			mouseY >= this.rect.startY &&
+			mouseY <= this.rect.h + this.rect.startY;
+	}
+
+	drawRect(pageX: number, pageY: number, w: number, h: number) {
+		this.rect.w = (pageX - this.canvas.offsetLeft) - this.rect.startX;
+		this.rect.h = (pageY - this.canvas.offsetTop) - this.rect.startY;
+		this.ctx.strokeStyle = 'red';
+		this.ctx.lineWidth = this.contextLineWidth;
+		this.ctx.strokeRect(this.rect.startX, this.rect.startY, w, h);
+	}
+
+	drawLineAtClickedGridBoundaryPosition(e: any) {
+		let startTop = this.rect.startY;
+		let startLeft = this.rect.startX;
+		let endBottom = this.boxH + startTop;
+		let endRight = this.boxW + startLeft;
+		let mouseX = e.pageX - this.canvas.offsetLeft;
+		let mouseY = e.pageY - this.canvas.offsetTop;
+		let isTouchingBoundaryStartX = Math.abs(mouseX - startLeft) < this.lineClickTolerance;
+		let isTouchingBoundaryEndX = Math.abs(mouseX - endRight) < this.lineClickTolerance;
+		let isTouchingBoundaryStartY = Math.abs(mouseY - startTop) < this.lineClickTolerance;
+		let isTouchingBoundaryEndY = Math.abs(mouseY - endBottom) < this.lineClickTolerance;
+		if (isTouchingBoundaryStartX || isTouchingBoundaryEndX) {
+			let line: HorizontalLineType = {
+				startX: startLeft,
+				startY: this.getShiftRateFromMousePosition(mouseY),
+				endX: endRight
+			};
+			this.horizontalPointsSelected.push(line);
+			this.undoLineList.push(true);
+			this.drawLineFromBoxBoundaryX(line);
+		} else if (isTouchingBoundaryStartY || isTouchingBoundaryEndY) {
+			let line: VerticalLineType = {
+				startX: this.getShiftRateFromMousePosition(mouseX),
+				startY: startTop,
+				endY: endBottom
+			};
+			this.verticalPointsSelected.push(line);
+			this.drawLineFromBoxBoundaryY(line);
+			this.undoLineList.push(false);
+		}
+	}
+
+	checkForCircleOnBoundary = (e: any) => {
+		let startTop = this.rect.startY;
+		let startLeft = this.rect.startX;
+		let endBottom = this.boxH + startTop;
+		let endRight = this.boxW + startLeft;
+		let mouseX = e.pageX - this.canvas.offsetLeft;
+		let mouseY = e.pageY - this.canvas.offsetTop;
+		let isTouchingBoundaryStartX = Math.abs(mouseX - startLeft) < this.lineClickTolerance;
+		let isTouchingBoundaryEndX = Math.abs(mouseX - endRight) < this.lineClickTolerance;
+		let isTouchingBoundaryStartY = Math.abs(mouseY - startTop) < this.lineClickTolerance;
+		let isTouchingBoundaryEndY = Math.abs(mouseY - endBottom) < this.lineClickTolerance;
+		if (isTouchingBoundaryStartX && mouseY > this.rect.startY && mouseY < this.rect.startY + this.rect.h) {
+			let shiftRateFromMousePosition = this.getShiftRateFromMousePosition(mouseY);
+			let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight};
+			this.drawSelectableCircleOnBoxBoundary(startLeft, shiftRateFromMousePosition);
+			this.drawLineFromBoxBoundaryX(line);
+		} else if (isTouchingBoundaryEndX && mouseY > this.rect.startY && mouseY < this.rect.startY + this.rect.h) {
+			let shiftRateFromMousePosition = this.getShiftRateFromMousePosition(mouseY);
+			let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight};
+			this.drawSelectableCircleOnBoxBoundary(endRight, shiftRateFromMousePosition);
+			this.drawLineFromBoxBoundaryX(line);
+		} else if (isTouchingBoundaryStartY && mouseX > this.rect.startX && mouseX < this.rect.startX + this.rect.w) {
+			let shiftRateFromMousePosition = this.getShiftRateFromMousePosition(mouseX);
+			let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: startTop, endY: endBottom};
+			this.drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, startTop);
+			this.drawLineFromBoxBoundaryY(line);
+		} else if (isTouchingBoundaryEndY && mouseX > this.rect.startX && mouseX < this.rect.startX + this.rect.w) {
+			let shiftRateFromMousePosition = this.getShiftRateFromMousePosition(mouseX);
+			let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: endBottom, endY: startTop};
+			this.drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, endBottom);
+			this.drawLineFromBoxBoundaryY(line);
+		}
+	}
+
+	getShiftRateFromMousePosition = (mousePos: number) => {
+		return Math.round(mousePos / this.circleLineShiftSize) * this.circleLineShiftSize;
+	}
+
+	resetBoxPosition = (pageX: number, pageY: number) => {
+		this.boxStartX = pageX;
+		this.boxStartY = pageY;
+		this.boxW = this.rect.w;
+		this.boxH = this.rect.h;
+	}
+
+	mouseMove = (e: any) => {
+		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		if (this.drag && this.body != null) {
+			this.resetBoxPosition(e.pageX, e.pageY);
+		} else if (!this.drag) {
+			let startTop = this.rect.startY;
+			let startLeft = this.rect.startX;
+			let endBottom = this.boxH + startTop;
+			let endRight = this.boxW + startLeft;
+			let mouseX = e.pageX - this.canvas.offsetLeft;
+			let mouseY = e.pageY - this.canvas.offsetTop;
+			if (this.isMouseOnBoundaryOfBox(mouseX, startLeft, endRight, mouseY, startTop, endBottom)) {
+				this.checkForCircleOnBoundary(e);
 			}
 		}
+		this.drawRect(this.boxStartX, this.boxStartY, this.boxW, this.boxH);
+		this.drawAllSelectedLines();
 	}
-	return tableRows;
-};
 
-export const getItemsWithinRegion = () => {
-	let parentItem = document.getElementById("drawable-container");
+	drawAllSelectedLines = () => {
+		this.horizontalPointsSelected.forEach((line: HorizontalLineType) => {
+			this.drawLineFromBoxBoundaryX(line);
+		});
 
-	horizontalPointsSelected.sort(function(a, b) {
-		return a.startY - b.startY;
-	});
+		this.verticalPointsSelected.forEach((line: VerticalLineType) => {
+			this.drawLineFromBoxBoundaryY(line);
+		});
+	}
 
-	verticalPointsSelected.sort(function(a, b) {
-		return a.startX - b.startX;
-	});
+	drawSelectableCircleOnBoxBoundary = (mouseX: number, mouseY: number) => {
+		this.ctx.fillStyle = 'red';
+		this.ctx.beginPath();
+		this.ctx.arc(mouseX, mouseY, this.selectCircleSize, 0, Math.PI * 2);
+		this.ctx.closePath();
+		this.ctx.fill();
+	}
 
-	let tableRows: string[][] = buildTableFromBox(verticalPointsSelected.length, horizontalPointsSelected.length);
-	horizontalPointsSelected.push({startX: rect.startX, startY: rect.startY + rect.h, endX: rect.startX + rect.w});
-	verticalPointsSelected.push({startX: rect.startX + rect.w, startY: rect.startY, endY: rect.startY + rect.h});
+	drawLineFromBoxBoundaryX = (line: HorizontalLineType) => {
+		this.ctx.fillStyle = 'red';
+		this.ctx.beginPath();
+		this.ctx.lineWidth = this.contextLineWidth;
+		this.ctx.moveTo(line.startX, line.startY);
+		this.ctx.lineTo(line.endX, line.startY);
+		this.ctx.closePath();
+		this.ctx.stroke();
+	}
 
-	if (parentItem != null) {
-		let divItems: NodeList = parentItem.childNodes;
-		for (let i = 0; i < divItems.length; i++) {
-			let spanItems: NodeList = divItems[i].childNodes;
-			for (let j = 0; j < spanItems.length; j++) {
-				let item: HTMLElement = spanItems[j] as HTMLElement;
-				let itemBoundaryInfo: DOMRect = item.getBoundingClientRect();
-				let itemPositionX = itemBoundaryInfo.x - canvas.offsetLeft;
-				let itemPositionY = itemBoundaryInfo.y - canvas.offsetTop + window.scrollY;
-				if (isItemInsideBox(itemPositionX, itemPositionY)) {
-					let gridPosition: [number, number] = findGridPosition(itemPositionX, itemPositionY,
-						horizontalPointsSelected, verticalPointsSelected);
-					let gridRowPos: number = gridPosition[0];
-					let gridColPos: number = gridPosition[1];
-					tableRows[gridRowPos][gridColPos] = tableRows[gridRowPos][gridColPos] != "" ? tableRows[gridRowPos][gridColPos] + " " + item.innerText : item.innerText;
+	drawLineFromBoxBoundaryY = (line: VerticalLineType) => {
+		this.ctx.fillStyle = 'red';
+		this.ctx.lineWidth = this.contextLineWidth;
+		this.ctx.beginPath();
+		this.ctx.moveTo(line.startX, line.startY);
+		this.ctx.lineTo(line.startX, line.endY);
+		this.ctx.closePath();
+		this.ctx.stroke();
+	}
+
+	isItemInsideBox = (xBoundary: number, yBoundary: number) => {
+		return xBoundary >= this.rect.startX &&
+			xBoundary <= this.rect.w + this.rect.startX &&
+			yBoundary >= this.rect.startY &&
+			yBoundary <= this.boxH + this.rect.startY;
+	}
+
+	undoLastDrawnLine = () => {
+		let isLastLineHorizontal = this.undoLineList.pop();
+		if (isLastLineHorizontal) {
+			this.horizontalPointsSelected.pop();
+		} else {
+			this.verticalPointsSelected.pop();
+		}
+		this.ctx.clearthis.rect(0, 0, this.canvas.width, this.canvas.height);
+		this.drawRect(this.boxStartX, this.boxStartY, this.boxW, this.boxH);
+		this.drawAllSelectedLines();
+	}
+
+	buildTableFromBox = (totalCols: number, totalRows: number) => {
+		let tableRows: string[][] = [];
+		for (let row = 0; row < totalRows + 1; row++) {
+			for (let col = 0; col < totalCols + 1; col++) {
+				if (tableRows[row] != undefined) {
+					tableRows[row].push("");
+				} else {
+					tableRows[row] = [""];
 				}
 			}
 		}
-	}
+		return tableRows;
+	};
 
-	return tableRows;
-}
+	getItemsWithinRegion = () => {
+		// TODO: make the ID here the wrapper if possible or figure out another way to be generic
+		let parentItem = document.getElementById("drawable-container");
 
-const findGridPosition = (itemX: number, itemY: number, horizontalLines: HorizontalLineType[],
-						  verticalLines: VerticalLineType[]): [number, number] => {
-	let col: number = 0;
-	let row: number = 0;
-	if (horizontalLines.length === 0) {
-		for (let j = 0; j < verticalLines.length; j++) {
-			let verticalLineXPos = verticalLines[j].startX
-			if (itemX < verticalLineXPos) {
-				row = 0;
-				col = j;
-			} else {
-				col++;
+		this.horizontalPointsSelected.sort(function (a, b) {
+			return a.startY - b.startY;
+		});
+
+		this.verticalPointsSelected.sort(function (a, b) {
+			return a.startX - b.startX;
+		});
+
+		let tableRows: string[][] = this.buildTableFromBox(this.verticalPointsSelected.length, this.horizontalPointsSelected.length);
+		this.horizontalPointsSelected.push({startX: this.rect.startX, startY: this.rect.startY + this.rect.h, endX: this.rect.startX + this.rect.w});
+		this.verticalPointsSelected.push({startX: this.rect.startX + this.rect.w, startY: this.rect.startY, endY: this.rect.startY + this.rect.h});
+
+		if (parentItem != null) {
+			let divItems: NodeList = parentItem.childNodes;
+			for (let i = 0; i < divItems.length; i++) {
+				let spanItems: NodeList = divItems[i].childNodes;
+				for (let j = 0; j < spanItems.length; j++) {
+					let item: HTMLElement = spanItems[j] as HTMLElement;
+					let itemBoundaryInfo: DOMRect = item.getBoundingClientRect()
+					let itemPositionX = itemBoundaryInfo.x - this.canvas.offsetLeft;
+					let itemPositionY = itemBoundaryInfo.y - this.canvas.offsetTop + window.scrollY;
+					if (this.isItemInsideBox(itemPositionX, itemPositionY)) {
+						let gridPosition: [number, number] = this.findGridPosition(itemPositionX, itemPositionY,
+							this.horizontalPointsSelected, this.verticalPointsSelected);
+						let gridRowPos: number = gridPosition[0];
+						let gridColPos: number = gridPosition[1];
+						tableRows[gridRowPos][gridColPos] = tableRows[gridRowPos][gridColPos] != "" ? tableRows[gridRowPos][gridColPos] + " " + item.innerText : item.innerText;
+					}
+				}
 			}
 		}
+
+		return tableRows;
 	}
-	else if (verticalLines.length === 0) {
-		for (let i = 0; i < horizontalLines.length; i++) {
-			let horizontalLineYPos = horizontalLines[i].startY;
-			if (itemY < horizontalLineYPos) {
-				row = i;
-				col = 0;
-			} else {
-				row++;
-			}
-		}
-	}
-	else {
-		for (let i = 0; i < horizontalLines.length; i++) {
-			let horizontalLineYPos = horizontalLines[i].startY;
+
+
+	findGridPosition = (itemX: number, itemY: number, horizontalLines: HorizontalLineType[],
+						verticalLines: VerticalLineType[]): [number, number] => {
+		let col: number = 0;
+		let row: number = 0;
+		if (horizontalLines.length === 0) {
 			for (let j = 0; j < verticalLines.length; j++) {
 				let verticalLineXPos = verticalLines[j].startX
-				if (itemX < verticalLineXPos && itemY < horizontalLineYPos) {
-					return [i, j];
+				if (itemX < verticalLineXPos) {
+					row = 0;
+					col = j;
+				} else {
+					col++;
+				}
+			}
+		} else if (verticalLines.length === 0) {
+			for (let i = 0; i < horizontalLines.length; i++) {
+				let horizontalLineYPos = horizontalLines[i].startY;
+				if (itemY < horizontalLineYPos) {
+					row = i;
+					col = 0;
+				} else {
+					row++;
+				}
+			}
+		} else {
+			for (let i = 0; i < horizontalLines.length; i++) {
+				let horizontalLineYPos = horizontalLines[i].startY;
+				for (let j = 0; j < verticalLines.length; j++) {
+					let verticalLineXPos = verticalLines[j].startX
+					if (itemX < verticalLineXPos && itemY < horizontalLineYPos) {
+						return [i, j];
+					}
 				}
 			}
 		}
+		return [row, col]
 	}
-	return [row, col]
 }
