@@ -1,0 +1,14 @@
+.drawable-container {
+    background-color: whitesmoke;
+    border-radius: 1%;
+    z-index: 10;
+    display: block;
+    width: 100%;
+    height: 50em;
+}
+
+.drawable-container > div {
+    color: black;
+    text-align: justify;
+    padding: 5em;
+}

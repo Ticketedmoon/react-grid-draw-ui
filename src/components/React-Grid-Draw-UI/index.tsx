@@ -4,7 +4,7 @@ import HyperModal from 'react-hyper-modal';
 
 const style = require("./style/style.module.css");
 
-export const ReactGridDrawUI: FunctionComponent = (): ReactElement => {
+export const ReactGridDrawUI: FunctionComponent = ({children}): ReactElement => {
 
 	const [isCopyModalOpen, setIsCopyModalOpen] = useState<boolean>(false);
 
@@ -69,7 +69,7 @@ export const ReactGridDrawUI: FunctionComponent = (): ReactElement => {
 					<a className={style["undo"]} onClick={() => undoLastDrawnLine()}>Undo</a>
 				</div>
 				<div id="canvas-wrap" className={style["canvas-wrap"]}>
-					<div className={style["drawable-container"]} id={"drawable-container"}/>
+					{children}
 					<canvas id="canvas"/>
 				</div>
 			</div>
