@@ -30,6 +30,7 @@ export class CanvasManager {
 
 	createCanvas = () => {
 		this.canvas = document.getElementById('canvas');
+		// TODO: Fix this ID as well
 		this.body = document.getElementById("drawable-container");
 		this.ctx = this.canvas.getContext('2d');
 		this.rect = {};
