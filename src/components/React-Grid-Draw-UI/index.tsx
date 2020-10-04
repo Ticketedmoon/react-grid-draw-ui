@@ -19,10 +19,10 @@ export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalPropert
 
 	useEffect(() => {
 		if (Object.keys(canvasManger.rect).length !== 0 && !hasDataBeenRead) {
-			props.getData(canvasManger.getItemsWithinRegion());
+			props.getGridData(canvasManger.getItemsWithinRegion());
 			setHasDataBeenRead(true);
 		}
-	}, [props.getData])
+	}, [props.getGridData])
 
 	useEffect(() => {
 		if (hasDataBeenRead) {

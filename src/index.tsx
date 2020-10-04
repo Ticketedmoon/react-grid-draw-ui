@@ -10,7 +10,7 @@ const App: React.FunctionComponent = () => {
 
 	return (
 		<div>
-			<ReactGridDrawUI getData={(data: string[][]) => setData(data)} >
+			<ReactGridDrawUI getGridData={(data: string[][]) => setData(data)} >
 				<div className={style["drawable-container"]} id={"drawable-container"}>
 					<div>
 						<div className={style["test-container"]}>

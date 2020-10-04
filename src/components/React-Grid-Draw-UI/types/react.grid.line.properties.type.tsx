@@ -3,7 +3,7 @@ type ReactGridDrawLineOptionalProperties = {
 	selectCircleSize?: number,
 	circleLineShiftSize?: number,
 	contextLineWidth?: number,
-	getData: (data: string[][]) => void;
+	getGridData: (data: string[][]) => void;
 }
 
 type ReactGridDrawLineRequiredProperties = {
