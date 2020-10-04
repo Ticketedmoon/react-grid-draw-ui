@@ -5,6 +5,7 @@ export class CanvasManager {
 	rect: any;
 	drag: boolean = false;
 	body: HTMLElement | null = null;
+	containerID: string | null = null;
 
 	lineClickTolerance: number;
 	selectCircleSize: number;
@@ -28,10 +29,10 @@ export class CanvasManager {
 		this.contextLineWidth = lineProperties.contextLineWidth;
 	}
 
-	createCanvas = () => {
+	createCanvas = (containerID: string) => {
+		this.containerID = containerID;
 		this.canvas = document.getElementById('canvas');
-		// TODO: Fix this ID as well
-		this.body = document.getElementById("drawable-container");
+		this.body = document.getElementById(this.containerID);
 		this.ctx = this.canvas.getContext('2d');
 		this.rect = {};
 		this.canvas.addEventListener('mousedown', this.mouseDown, false);
@@ -267,8 +268,7 @@ export class CanvasManager {
 	};
 
 	getItemsWithinRegion = () => {
-		// TODO: make the ID here the wrapper if possible or figure out another way to be generic
-		let parentItem = document.getElementById("drawable-container");
+		let parentItem = document.getElementById(this.containerID as string);
 
 		this.horizontalPointsSelected.sort(function (a, b) {
 			return a.startY - b.startY;

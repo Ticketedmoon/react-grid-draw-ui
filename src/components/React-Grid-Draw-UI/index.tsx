@@ -1,4 +1,12 @@
-import React, {Fragment, FunctionComponent, PropsWithChildren, ReactElement, useEffect, useState} from "react";
+import React, {
+	Fragment,
+	FunctionComponent,
+	PropsWithChildren,
+	ReactElement,
+	ReactNode,
+	useEffect,
+	useState
+} from "react";
 import {CanvasManager} from "./partial/canvasManager";
 
 const style = require("./style/style.module.css");
@@ -14,7 +22,8 @@ export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalPropert
 	const [hasDataBeenRead, setHasDataBeenRead] = useState<boolean>(false);
 
 	useEffect(() => {
-		canvasManger.createCanvas();
+		let containerID: string = getContainerID();
+		canvasManger.createCanvas(containerID);
 	}, []);
 
 	useEffect(() => {
@@ -29,6 +38,19 @@ export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalPropert
 			setHasDataBeenRead(false);
 		}
 	}, [hasDataBeenRead])
+
+	const getContainerID = () => {
+		let children = props.children as React.ReactNodeArray;
+		if (children.length > 1) {
+			throw "children of element <ReactGridDrawUI> greater than 1";
+		}
+		let drawingContainer = children as ReactNode as {props: {id: string}};
+		let containerID = drawingContainer.props.id;
+		if (containerID == null) {
+			throw "child of element <ReactGridDrawUI> has no ID";
+		}
+		return containerID;
+	}
 
 	return (
 		<Fragment>

@@ -11,7 +11,7 @@ const App: React.FunctionComponent = () => {
 	return (
 		<div>
 			<ReactGridDrawUI getGridData={(data: string[][]) => setData(data)} >
-				<div className={style["drawable-container"]} id={"drawable-container"}>
+				<div className={style["drawable-container"]} id={"container"}>
 					<div>
 						<div className={style["test-container"]}>
 							<p> test</p>
