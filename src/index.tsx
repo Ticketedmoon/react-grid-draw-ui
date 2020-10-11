@@ -15,10 +15,28 @@ const App: React.FunctionComponent = () => {
 				<div className={style["drawable-container"]} id={"container"}>
 					<div>
 						<div className={style["test-container"]}>
-							<p> test</p>
+							<p> test-A </p>
 						</div>
 						<div className={style["test-container1"]}>
-							<p> test</p>
+							<p> test-B </p>
+						</div>
+					</div>
+
+					<div>
+						<div className={style["test-container"]}>
+							<p> test-C </p>
+						</div>
+						<div className={style["test-container1"]}>
+							<p> test-D </p>
+						</div>
+					</div>
+
+					<div>
+						<div className={style["test-container"]}>
+							<p> test-E </p>
+						</div>
+						<div className={style["test-container1"]}>
+							<p> test-F </p>
 						</div>
 					</div>
 				</div>

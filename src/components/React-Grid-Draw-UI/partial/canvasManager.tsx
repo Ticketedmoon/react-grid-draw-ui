@@ -281,6 +281,8 @@ export class CanvasManager {
 		});
 
 		let tableRows: string[][] = this.buildTableFromBox(this.verticalPointsSelected.length, this.horizontalPointsSelected.length);
+		this.horizontalPointsSelected.push({startX: this.rect.startX, startY: this.rect.startY + this.rect.h, endX: this.rect.startX + this.rect.w});
+		this.verticalPointsSelected.push({startX: this.rect.startX + this.rect.w, startY: this.rect.startY, endY: this.rect.startY + this.rect.h});
 
 		if (parentItem != null) {
 			let divItems: NodeList = parentItem.childNodes;
@@ -307,7 +309,8 @@ export class CanvasManager {
 				}
 			}
 		}
-
+		this.horizontalPointsSelected.pop();
+		this.verticalPointsSelected.pop();
 		return tableRows;
 	}
 
