@@ -1,16 +1,17 @@
-import React, {useState} from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import {ReactGridDrawUI} from "./components/React-Grid-Draw-UI";
+import {useGridData} from "./components/React-Grid-Draw-UI/hooks/useGridData";
 
 const style = require("./style.module.css");
 
 const App: React.FunctionComponent = () => {
 
-	const [data, setData] = useState<string[][]>();
+	const getGridData: (() => string[][]) | undefined = useGridData(null);
 
 	return (
 		<div>
-			<ReactGridDrawUI getGridData={(data: string[][]) => setData(data)} >
+			<ReactGridDrawUI>
 				<div className={style["drawable-container"]} id={"container"}>
 					<div>
 						<div className={style["test-container"]}>
@@ -22,7 +23,7 @@ const App: React.FunctionComponent = () => {
 					</div>
 				</div>
 			</ReactGridDrawUI>
-			<button onClick={() => setData([])}/>
+			<button onClick={getGridData}> test </button>
 		</div>
 	)
 };

@@ -8,6 +8,7 @@ import React, {
 	useState
 } from "react";
 import {CanvasManager} from "./partial/canvasManager";
+import {useGridData} from "./hooks/useGridData";
 
 const style = require("./style/style.module.css");
 
@@ -19,25 +20,13 @@ export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalPropert
 		circleLineShiftSize: props.circleLineShiftSize as number,
 		contextLineWidth: props.contextLineWidth as number
 	}));
-	const [hasDataBeenRead, setHasDataBeenRead] = useState<boolean>(false);
+
+	useGridData(canvasManger);
 
 	useEffect(() => {
 		let containerID: string = getContainerID();
 		canvasManger.createCanvas(containerID);
 	}, []);
-
-	useEffect(() => {
-		if (Object.keys(canvasManger.rect).length !== 0 && !hasDataBeenRead) {
-			props.getGridData(canvasManger.getItemsWithinRegion());
-			setHasDataBeenRead(true);
-		}
-	}, [props.getGridData])
-
-	useEffect(() => {
-		if (hasDataBeenRead) {
-			setHasDataBeenRead(false);
-		}
-	}, [hasDataBeenRead])
 
 	const getContainerID = () => {
 		let children = props.children as React.ReactNodeArray;
