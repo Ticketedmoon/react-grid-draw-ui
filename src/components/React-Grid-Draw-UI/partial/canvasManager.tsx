@@ -259,8 +259,10 @@ export class CanvasManager {
 			for (let col = 0; col < totalCols + 1; col++) {
 				if (tableRows[row] != undefined) {
 					tableRows[row].push("");
-				} else {
+				} else if (totalRows !== 0 || totalCols !== 0) {
 					tableRows[row] = [""];
+				} else {
+					tableRows[row] = [];
 				}
 			}
 		}
@@ -279,8 +281,6 @@ export class CanvasManager {
 		});
 
 		let tableRows: string[][] = this.buildTableFromBox(this.verticalPointsSelected.length, this.horizontalPointsSelected.length);
-		this.horizontalPointsSelected.push({startX: this.rect.startX, startY: this.rect.startY + this.rect.h, endX: this.rect.startX + this.rect.w});
-		this.verticalPointsSelected.push({startX: this.rect.startX + this.rect.w, startY: this.rect.startY, endY: this.rect.startY + this.rect.h});
 
 		if (parentItem != null) {
 			let divItems: NodeList = parentItem.childNodes;
@@ -296,7 +296,13 @@ export class CanvasManager {
 							this.horizontalPointsSelected, this.verticalPointsSelected);
 						let gridRowPos: number = gridPosition[0];
 						let gridColPos: number = gridPosition[1];
-						tableRows[gridRowPos][gridColPos] = tableRows[gridRowPos][gridColPos] != "" ? tableRows[gridRowPos][gridColPos] + " " + item.innerText : item.innerText;
+						if (tableRows[gridRowPos] != undefined) {
+							let tableItem: string = tableRows[gridRowPos][gridColPos];
+							let condition: boolean = tableItem != "" && tableItem != undefined;
+							tableRows[gridRowPos][gridColPos] = condition ? tableRows[gridRowPos][gridColPos] + " " + item.innerText : item.innerText;
+						} else {
+							tableRows[gridRowPos] = [];
+						}
 					}
 				}
 			}
@@ -304,7 +310,6 @@ export class CanvasManager {
 
 		return tableRows;
 	}
-
 
 	findGridPosition = (itemX: number, itemY: number, horizontalLines: HorizontalLineType[],
 						verticalLines: VerticalLineType[]): [number, number] => {
