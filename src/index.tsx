@@ -7,7 +7,7 @@ const style = require("./style.module.css");
 
 const App: React.FunctionComponent = () => {
 
-	const getGridData: (() => string[][]) | undefined = useGridData(null);
+	const getGridData: (() => () => string[][]) = useGridData(null);
 
 	return (
 		<div>
@@ -23,7 +23,7 @@ const App: React.FunctionComponent = () => {
 					</div>
 				</div>
 			</ReactGridDrawUI>
-			<button onClick={getGridData}> test </button>
+			<button onClick={() => console.log(getGridData())}> test </button>
 		</div>
 	)
 };
