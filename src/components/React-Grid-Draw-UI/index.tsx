@@ -8,7 +8,7 @@ import React, {
 	useState
 } from "react";
 import {CanvasManager} from "./partial/canvasManager";
-import {useGridData} from "./hooks/useGridData";
+import {setCanvasManagerForHook} from "./hooks/useGridData";
 
 const style = require("./style/style.module.css");
 
@@ -21,7 +21,7 @@ export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalPropert
 		contextLineWidth: props.contextLineWidth as number
 	}));
 
-	useGridData(canvasManger);
+	setCanvasManagerForHook(canvasManger)
 
 	useEffect(() => {
 		let containerID: string = getContainerID();

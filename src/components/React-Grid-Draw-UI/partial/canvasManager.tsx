@@ -248,7 +248,7 @@ export class CanvasManager {
 		} else {
 			this.verticalPointsSelected.pop();
 		}
-		this.ctx.clearthis.rect(0, 0, this.canvas.width, this.canvas.height);
+		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.drawRect(this.boxStartX, this.boxStartY, this.boxW, this.boxH);
 		this.drawAllSelectedLines();
 	}
