@@ -48,11 +48,11 @@ export class CanvasManager {
 		}
 	}
 
-	resetBoxProperties = (pageX: number, pageY: number) => {
+	resetBoxProperties = (pageX: number, pageY: number, startX: number, startY: number) => {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.resetBoxPosition(pageX, pageY);
-		this.rect.startX = pageX - this.canvas.offsetLeft;
-		this.rect.startY = pageY - this.canvas.offsetTop;
+		this.rect.startX = startX;
+		this.rect.startY = startY;
 		this.horizontalPointsSelected = [];
 		this.verticalPointsSelected = [];
 	}
@@ -68,7 +68,7 @@ export class CanvasManager {
 		if (this.isMouseOnBoundaryOfBox(mouseX, startLeft, endRight, mouseY, startTop, endBottom)) {
 			this.drawLineAtClickedGridBoundaryPosition(e);
 		} else if (!this.isMouseClickInsideBoxRegion(e)) {
-			this.resetBoxProperties(e.pageX, e.pageY);
+			this.resetBoxProperties(e.pageX, e.pageY, mouseX, mouseY);
 			this.drag = true;
 		}
 	}
