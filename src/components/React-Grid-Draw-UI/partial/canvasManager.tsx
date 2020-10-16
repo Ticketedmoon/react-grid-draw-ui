@@ -78,9 +78,11 @@ export class CanvasManager {
 	}
 
 	isMouseOnBoundaryOfBox(mouseX: number, startLeft: number, endRight: number, mouseY: number, startTop: number, endBottom: number) {
-		let isTouchingBoundaryX = Math.abs(mouseX - startLeft) < this.lineClickTolerance || Math.abs(mouseX - endRight) < this.lineClickTolerance;
-		let isTouchingBoundaryY = Math.abs(mouseY - startTop) < this.lineClickTolerance || Math.abs(mouseY - endBottom) < this.lineClickTolerance;
-		return isTouchingBoundaryX || isTouchingBoundaryY;
+		let isTouchingBoundaryX: boolean = Math.abs(mouseX - startLeft) < this.lineClickTolerance || Math.abs(mouseX - endRight) < this.lineClickTolerance;
+		let isTouchingBoundaryY: boolean = Math.abs(mouseY - startTop) < this.lineClickTolerance || Math.abs(mouseY - endBottom) < this.lineClickTolerance;
+		let isWithinXBoundaryOfBox = mouseX >= startLeft && mouseX <= endRight;
+		let isWithinYBoundaryOfBox = mouseY >= startTop && mouseY <= endBottom;
+		return (isTouchingBoundaryX && isWithinYBoundaryOfBox) || (isTouchingBoundaryY && isWithinXBoundaryOfBox);
 	}
 
 	isMouseClickInsideBoxRegion = (e: any): boolean => {
