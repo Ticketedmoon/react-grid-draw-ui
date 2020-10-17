@@ -7,8 +7,7 @@ import React, {
 	useEffect,
 	useState
 } from "react";
-import {CanvasManager} from "./partial/canvasManager";
-import {setCanvasManagerForHook} from "./hooks/useGridData";
+import {CanvasManager} from "./lib/canvasManager";
 
 const style = require("./style/style.module.css");
 
@@ -20,8 +19,6 @@ export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalPropert
 		circleLineShiftSize: props.circleLineShiftSize as number,
 		contextLineWidth: props.contextLineWidth as number
 	}));
-
-	setCanvasManagerForHook(canvasManger)
 
 	useEffect(() => {
 		let containerID: string = getContainerID();

@@ -1,15 +1,27 @@
+import {RectangleBoundaryUtil} from "./rectangleBoundaryUtil";
+
 export class RectangleCreationManager {
 
-    drawAllDrawnRectangles = (e: MouseEvent) => {
-        this.rectangles.forEach((rect: GridRectangle) => {
-            this.drawFinishedRectWithCheckForMouseOnBoxBoundary(rect, e);
-            rect.horizontalPointsSelected.forEach((line: HorizontalLineType) => {
-                this.drawLineFromBoxBoundaryX(line);
-            });
-            rect.verticalPointsSelected.forEach((line: VerticalLineType) => {
-                this.drawLineFromBoxBoundaryY(line);
-            });
-        });
+    private readonly rectangles: GridRectangle[];
+    private readonly currentRect: GridRectangle;
+    private ctx: CanvasRenderingContext2D;
+    private canvas: HTMLCanvasElement;
+
+    private readonly lineClickTolerance: number;
+    private readonly selectCircleSize: number;
+    private readonly contextLineWidth: number
+    private readonly circleLineShiftSize: number;
+
+    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, rectangles: GridRectangle[],
+                currentRect: GridRectangle, gridLineProperties: ReactGridDrawLineRequiredProperties) {
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.currentRect = currentRect;
+        this.rectangles = rectangles
+        this.lineClickTolerance = gridLineProperties.lineClickTolerance;
+        this.selectCircleSize = gridLineProperties.selectCircleSize;
+        this.contextLineWidth = gridLineProperties.contextLineWidth;
+        this.circleLineShiftSize = gridLineProperties.circleLineShiftSize;
     }
 
     drawCurrentRectangle(rect: GridRectangle, pageX: number, pageY: number) {
@@ -18,19 +30,6 @@ export class RectangleCreationManager {
         this.ctx.strokeStyle = 'red';
         this.ctx.lineWidth = this.contextLineWidth;
         this.ctx.strokeRect(rect.startX, rect.startY, rect.width, rect.height);
-    }
-
-    private drawFinishedRectWithCheckForMouseOnBoxBoundary(rect: GridRectangle, e: MouseEvent) {
-        let endBottom = rect.height + rect.startY;
-        let endRight = rect.width + rect.startX;
-        let mouseX = e.pageX - this.canvas.offsetLeft;
-        let mouseY = e.pageY - this.canvas.offsetTop;
-        let boxStartPositionX = rect.startX + rect.width + this.canvas.offsetLeft;
-        let boxStartPositionY = rect.startY + rect.height + this.canvas.offsetTop;
-        if (this.isMouseOnBoundaryOfBox(mouseX, rect.startX, endRight, mouseY, rect.startY, endBottom)) {
-            this.checkForCircleOnBoundary(rect, e);
-        }
-        this.drawCurrentRectangle(rect, boxStartPositionX, boxStartPositionY);
     }
 
     drawLineAtClickedGridBoundaryPosition(e: MouseEvent) {
@@ -44,10 +43,12 @@ export class RectangleCreationManager {
         let isTouchingBoundaryEndX = Math.abs(mouseX - endRight) < this.lineClickTolerance;
         let isTouchingBoundaryStartY = Math.abs(mouseY - startTop) < this.lineClickTolerance;
         let isTouchingBoundaryEndY = Math.abs(mouseY - endBottom) < this.lineClickTolerance;
+
+        // TODO: REFACTOR THIS INTO PRIVATE METHOD
         if (isTouchingBoundaryStartX || isTouchingBoundaryEndX) {
             let line: HorizontalLineType = {
                 startX: startLeft,
-                startY: this.getShiftRateFromMousePosition(mouseY),
+                startY: RectangleBoundaryUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize),
                 endX: endRight
             };
             this.currentRect.horizontalPointsSelected.push(line);
@@ -55,7 +56,7 @@ export class RectangleCreationManager {
             this.drawLineFromBoxBoundaryX(line);
         } else if (isTouchingBoundaryStartY || isTouchingBoundaryEndY) {
             let line: VerticalLineType = {
-                startX: this.getShiftRateFromMousePosition(mouseX),
+                startX: RectangleBoundaryUtil.getShiftRateFromMousePosition(mouseX, this.circleLineShiftSize),
                 startY: startTop,
                 endY: endBottom
             };
@@ -99,8 +100,17 @@ export class RectangleCreationManager {
         rect.startY = startY;
     }
 
-    private drawElementsToScreen = (e: MouseEvent) => {
-        this.drawAllDrawnRectangles(e);
+    undoLastDrawnLine = () => {
+        let isLastLineHorizontal = this.currentRect.undoLineList.pop();
+        if (isLastLineHorizontal) {
+            this.currentRect.horizontalPointsSelected.pop();
+        } else {
+            this.currentRect.verticalPointsSelected.pop();
+        }
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let boxStartPositionX = this.currentRect.startX + this.currentRect.width + this.canvas.offsetLeft;
+        let boxStartPositionY = this.currentRect.startY + this.currentRect.height + this.canvas.offsetTop;
+        this.drawCurrentRectangle(this.currentRect, boxStartPositionX, boxStartPositionY);
     }
 
 }

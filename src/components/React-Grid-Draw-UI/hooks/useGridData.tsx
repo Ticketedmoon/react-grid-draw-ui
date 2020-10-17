@@ -1,16 +1,18 @@
-import {CanvasManager} from "../partial/canvasManager";
 import {useEffect, useState} from "react";
+import {RectangleCreationManager} from "../lib/rectangleCreationManager";
+import {GridOutputManager} from "../lib/gridOutputManager";
 
-let canvasManager: CanvasManager | null = null;
+let rectangleCreationManager: RectangleCreationManager | null = null;
+let gridOutputManager: GridOutputManager | null = null;
 
 export const useGridData = (): Function[] => {
 	const [extractGridDataFunction, setExtractGridDataFunction] = useState<() => () => string[][]>(() => () => []);
 	const [undoLastLineFunction, setUndoLastLineFunction] = useState<() => () => void>();
 
 	useEffect(() => {
-		if (canvasManager != null) {
-			setExtractGridDataFunction(() => () => canvasManager != null ? canvasManager.getItemsWithinRegion() : []);
-			setUndoLastLineFunction(() => () => canvasManager != null ? canvasManager.undoLastDrawnLine() : () => {});
+		if (rectangleCreationManager != null && gridOutputManager != null) {
+			setExtractGridDataFunction(() => () => gridOutputManager != null ? gridOutputManager.getItemsWithinRegion() : []);
+			setUndoLastLineFunction(() => () => rectangleCreationManager != null ? rectangleCreationManager.undoLastDrawnLine() : () => {});
 		} else {
 			throw "Something went wrong with the useGridData hook - If this issue persists, please contact library support.";
 		}
@@ -23,6 +25,7 @@ export const useGridData = (): Function[] => {
 	}
 }
 
-export const setCanvasManagerForHook = (inputCanvasManager: CanvasManager) => {
-	canvasManager = inputCanvasManager;
+export const setCreationManagersForHook = (inputRectangleCreationManager: RectangleCreationManager, inputGridOutputManager: GridOutputManager) => {
+	rectangleCreationManager = inputRectangleCreationManager;
+	gridOutputManager = inputGridOutputManager;
 }

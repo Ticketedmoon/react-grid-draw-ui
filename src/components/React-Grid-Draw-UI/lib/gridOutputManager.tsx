@@ -1,28 +1,19 @@
-export class GridResultOutputManager {
+export class GridOutputManager {
 
-    buildTableFromBox = (totalCols: number, totalRows: number) => {
-        let tableRows: string[][] = [];
-        for (let row = 0; row < totalRows + 1; row++) {
-            for (let col = 0; col < totalCols + 1; col++) {
-                if (tableRows[row] != undefined) {
-                    tableRows[row].push("");
-                } else if (totalRows !== 0 || totalCols !== 0) {
-                    tableRows[row] = [""];
-                } else {
-                    tableRows[row] = [];
-                }
-            }
-        }
-        return tableRows;
-    };
+    private containerID: string | null = null;
+    private currentRect: GridRectangle;
+    private canvas: HTMLCanvasElement;
+
+    constructor(canvas: HTMLCanvasElement, currentRect: GridRectangle) {
+        this.canvas = canvas;
+        this.currentRect = currentRect;
+    }
 
     getItemsWithinRegion = () => {
         let parentItem = document.getElementById(this.containerID as string);
-
         this.currentRect.horizontalPointsSelected.sort(function (a, b) {
             return a.startY - b.startY;
         });
-
         this.currentRect.verticalPointsSelected.sort(function (a, b) {
             return a.startX - b.startX;
         });
@@ -61,7 +52,23 @@ export class GridResultOutputManager {
         return tableRows;
     }
 
-    findGridPosition = (itemX: number, itemY: number, horizontalLines: HorizontalLineType[],
+    private buildTableFromBox = (totalCols: number, totalRows: number) => {
+        let tableRows: string[][] = [];
+        for (let row = 0; row < totalRows + 1; row++) {
+            for (let col = 0; col < totalCols + 1; col++) {
+                if (tableRows[row] != undefined) {
+                    tableRows[row].push("");
+                } else if (totalRows !== 0 || totalCols !== 0) {
+                    tableRows[row] = [""];
+                } else {
+                    tableRows[row] = [];
+                }
+            }
+        }
+        return tableRows;
+    };
+
+    private findGridPosition = (itemX: number, itemY: number, horizontalLines: HorizontalLineType[],
                         verticalLines: VerticalLineType[]): [number, number] => {
         let col: number = 0;
         let row: number = 0;
