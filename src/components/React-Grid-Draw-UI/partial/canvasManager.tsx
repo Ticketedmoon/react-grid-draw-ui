@@ -2,7 +2,6 @@ export class CanvasManager {
 
 	canvas: any;
 	ctx: any;
-	rect: GridRectangle;
 	drag: boolean = false;
 	body: HTMLElement | null = null;
 	containerID: string | null = null;
@@ -12,17 +11,16 @@ export class CanvasManager {
 	circleLineShiftSize: number;
 	contextLineWidth: number
 
-	horizontalPointsSelected: HorizontalLineType[] = [];
-	verticalPointsSelected: VerticalLineType[] = [];
-
-	undoLineList: boolean[] = [];
+	currentRect: GridRectangle;
+	rectangles: GridRectangle[];
 
 	constructor(lineProperties: ReactGridDrawLineRequiredProperties) {
 		this.lineClickTolerance = lineProperties.lineClickTolerance;
 		this.selectCircleSize = lineProperties.selectCircleSize;
 		this.circleLineShiftSize = lineProperties.circleLineShiftSize;
 		this.contextLineWidth = lineProperties.contextLineWidth;
-		this.rect = {startX: 0, startY: 0, width: 0, height: 0};
+		this.rectangles = [];
+		this.currentRect = {startX: 0, startY: 0, height: 0, width: 0, horizontalPointsSelected: [], verticalPointsSelected: [], undoLineList: []};
 	}
 
 	createCanvas = (containerID: string) => {
@@ -43,55 +41,60 @@ export class CanvasManager {
 		}
 	}
 
-	resetBoxProperties = (pageX: number, pageY: number, startX: number, startY: number) => {
+	resetBoxProperties = (rect: GridRectangle, startX: number, startY: number) => {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.rect.startX = startX;
-		this.rect.startY = startY;
-		this.horizontalPointsSelected = [];
-		this.verticalPointsSelected = [];
+		rect.startX = startX;
+		rect.startY = startY;
 	}
 
-	mouseDown = (e: any) => {
-		let startTop = this.rect.startY;
-		let startLeft = this.rect.startX;
-		let endBottom = this.rect.height + startTop;
-		let endRight = this.rect.width + startLeft;
+	mouseDown = (e: MouseEvent) => {
+		let startTop = this.currentRect.startY;
+		let startLeft = this.currentRect.startX;
+		let endBottom = this.currentRect.height + startTop;
+		let endRight = this.currentRect.width + startLeft;
 		let mouseX = e.offsetX;
 		let mouseY = e.offsetY - this.canvas.offsetTop;
 
 		if (this.isMouseOnBoundaryOfBox(mouseX, startLeft, endRight, mouseY, startTop, endBottom)) {
 			this.drawLineAtClickedGridBoundaryPosition(e);
 		} else if (!this.isMouseClickInsideBoxRegion(e)) {
-			this.resetBoxProperties(e.pageX, e.pageY, mouseX, mouseY);
+			this.resetBoxProperties(this.currentRect, mouseX, mouseY);
 			this.drag = true;
 		}
 	}
 
-	mouseUp = (e: any) => {
+	mouseUp = (e: MouseEvent) => {
 		this.drag = false;
+		this.rectangles.push(this.currentRect);
+		this.currentRect = {startX: 0, startY: 0, width: 0, height: 0, verticalPointsSelected: [], horizontalPointsSelected: [], undoLineList: []}
+		this.drawAllDrawnRectangles(e);
 	}
 
-	mouseMove = (e: any) => {
+	mouseMove = (e: MouseEvent) => {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		if (this.drag && this.body != null) {
-			this.drawRect(e.pageX, e.pageY, this.rect.width, this.rect.height);
+			this.drawCurrentRectangle(this.currentRect, e.pageX, e.pageY);
 		} else if (!this.drag) {
-			let mouseX = e.pageX - this.canvas.offsetLeft;
-			let mouseY = e.pageY - this.canvas.offsetTop;
-			this.drawFinishedRectWithCheckForMouseOnBoxBoundary(mouseX, mouseY, this.rect, e);
+			this.drawFinishedRectWithCheckForMouseOnBoxBoundary(this.currentRect, e);
 		}
-		this.drawAllSelectedLines();
+		this.drawElementsToScreen(e);
 	}
 
-	private drawFinishedRectWithCheckForMouseOnBoxBoundary(mouseX: number, mouseY: number, rect: GridRectangle, e: any) {
+	private drawElementsToScreen = (e: MouseEvent) => {
+		this.drawAllDrawnRectangles(e);
+	}
+
+	private drawFinishedRectWithCheckForMouseOnBoxBoundary(rect: GridRectangle, e: MouseEvent) {
 		let endBottom = rect.height + rect.startY;
 		let endRight = rect.width + rect.startX;
+		let mouseX = e.pageX - this.canvas.offsetLeft;
+		let mouseY = e.pageY - this.canvas.offsetTop;
 		let boxStartPositionX = rect.startX + rect.width + this.canvas.offsetLeft;
 		let boxStartPositionY = rect.startY + rect.height + this.canvas.offsetTop;
 		if (this.isMouseOnBoundaryOfBox(mouseX, rect.startX, endRight, mouseY, rect.startY, endBottom)) {
-			this.checkForCircleOnBoundary(e);
+			this.checkForCircleOnBoundary(rect, e);
 		}
-		this.drawRect(boxStartPositionX, boxStartPositionY, this.rect.width, this.rect.height);
+		this.drawCurrentRectangle(rect, boxStartPositionX, boxStartPositionY);
 	}
 
 	isMouseOnBoundaryOfBox(mouseX: number, startLeft: number, endRight: number, mouseY: number, startTop: number, endBottom: number) {
@@ -102,28 +105,28 @@ export class CanvasManager {
 		return (isTouchingBoundaryX && isWithinYBoundaryOfBox) || (isTouchingBoundaryY && isWithinXBoundaryOfBox);
 	}
 
-	isMouseClickInsideBoxRegion = (e: any): boolean => {
+	isMouseClickInsideBoxRegion = (e: MouseEvent): boolean => {
 		let mouseX = Math.abs(parseInt(String(e.pageX - this.canvas.offsetLeft)));
 		let mouseY = Math.abs(parseInt(String(e.pageY - this.canvas.offsetTop)));
-		return mouseX >= this.rect.startX &&
-			mouseX <= this.rect.width + this.rect.startX &&
-			mouseY >= this.rect.startY &&
-			mouseY <= this.rect.height + this.rect.startY;
+		return mouseX >= this.currentRect.startX &&
+			mouseX <= this.currentRect.width + this.currentRect.startX &&
+			mouseY >= this.currentRect.startY &&
+			mouseY <= this.currentRect.height + this.currentRect.startY;
 	}
 
-	drawRect(pageX: number, pageY: number, w: number, h: number) {
-		this.rect.width = (pageX - this.canvas.offsetLeft) - this.rect.startX;
-		this.rect.height = (pageY - this.canvas.offsetTop) - this.rect.startY;
+	drawCurrentRectangle(rect: GridRectangle, pageX: number, pageY: number) {
+		rect.width = (pageX - this.canvas.offsetLeft) - rect.startX;
+		rect.height = (pageY - this.canvas.offsetTop) - rect.startY;
 		this.ctx.strokeStyle = 'red';
 		this.ctx.lineWidth = this.contextLineWidth;
-		this.ctx.strokeRect(this.rect.startX, this.rect.startY, w, h);
+		this.ctx.strokeRect(rect.startX, rect.startY, rect.width, rect.height);
 	}
 
-	drawLineAtClickedGridBoundaryPosition(e: any) {
-		let startTop = this.rect.startY;
-		let startLeft = this.rect.startX;
-		let endBottom = this.rect.height + startTop;
-		let endRight = this.rect.width + startLeft;
+	drawLineAtClickedGridBoundaryPosition(e: MouseEvent) {
+		let startTop = this.currentRect.startY;
+		let startLeft = this.currentRect.startX;
+		let endBottom = this.currentRect.height + startTop;
+		let endRight = this.currentRect.width + startLeft;
 		let mouseX = e.pageX - this.canvas.offsetLeft;
 		let mouseY = e.pageY - this.canvas.offsetTop;
 		let isTouchingBoundaryStartX = Math.abs(mouseX - startLeft) < this.lineClickTolerance;
@@ -136,8 +139,8 @@ export class CanvasManager {
 				startY: this.getShiftRateFromMousePosition(mouseY),
 				endX: endRight
 			};
-			this.horizontalPointsSelected.push(line);
-			this.undoLineList.push(true);
+			this.currentRect.horizontalPointsSelected.push(line);
+			this.currentRect.undoLineList.push(true);
 			this.drawLineFromBoxBoundaryX(line);
 		} else if (isTouchingBoundaryStartY || isTouchingBoundaryEndY) {
 			let line: VerticalLineType = {
@@ -145,39 +148,39 @@ export class CanvasManager {
 				startY: startTop,
 				endY: endBottom
 			};
-			this.verticalPointsSelected.push(line);
+			this.currentRect.verticalPointsSelected.push(line);
 			this.drawLineFromBoxBoundaryY(line);
-			this.undoLineList.push(false);
+			this.currentRect.undoLineList.push(false);
 		}
 	}
 
-	checkForCircleOnBoundary = (e: any) => {
-		let startTop = this.rect.startY;
-		let startLeft = this.rect.startX;
-		let endBottom = this.rect.height + startTop;
-		let endRight = this.rect.width + startLeft;
+	checkForCircleOnBoundary = (rect: GridRectangle, e: MouseEvent) => {
+		let startTop = rect.startY;
+		let startLeft = rect.startX;
+		let endBottom = rect.height + startTop;
+		let endRight = rect.width + startLeft;
 		let mouseX = e.pageX - this.canvas.offsetLeft;
 		let mouseY = e.pageY - this.canvas.offsetTop;
 		let isTouchingBoundaryStartX = Math.abs(mouseX - startLeft) < this.lineClickTolerance;
 		let isTouchingBoundaryEndX = Math.abs(mouseX - endRight) < this.lineClickTolerance;
 		let isTouchingBoundaryStartY = Math.abs(mouseY - startTop) < this.lineClickTolerance;
 		let isTouchingBoundaryEndY = Math.abs(mouseY - endBottom) < this.lineClickTolerance;
-		if (isTouchingBoundaryStartX && mouseY > this.rect.startY && mouseY < this.rect.startY + this.rect.height) {
+		if (isTouchingBoundaryStartX && mouseY > rect.startY && mouseY < rect.startY + rect.height) {
 			let shiftRateFromMousePosition = this.getShiftRateFromMousePosition(mouseY);
 			let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight};
 			this.drawSelectableCircleOnBoxBoundary(startLeft, shiftRateFromMousePosition);
 			this.drawLineFromBoxBoundaryX(line);
-		} else if (isTouchingBoundaryEndX && mouseY > this.rect.startY && mouseY < this.rect.startY + this.rect.height) {
+		} else if (isTouchingBoundaryEndX && mouseY > rect.startY && mouseY < rect.startY + rect.height) {
 			let shiftRateFromMousePosition = this.getShiftRateFromMousePosition(mouseY);
 			let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight};
 			this.drawSelectableCircleOnBoxBoundary(endRight, shiftRateFromMousePosition);
 			this.drawLineFromBoxBoundaryX(line);
-		} else if (isTouchingBoundaryStartY && mouseX > this.rect.startX && mouseX < this.rect.startX + this.rect.width) {
+		} else if (isTouchingBoundaryStartY && mouseX > rect.startX && mouseX < rect.startX + rect.width) {
 			let shiftRateFromMousePosition = this.getShiftRateFromMousePosition(mouseX);
 			let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: startTop, endY: endBottom};
 			this.drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, startTop);
 			this.drawLineFromBoxBoundaryY(line);
-		} else if (isTouchingBoundaryEndY && mouseX > this.rect.startX && mouseX < this.rect.startX + this.rect.width) {
+		} else if (isTouchingBoundaryEndY && mouseX > rect.startX && mouseX < rect.startX + rect.width) {
 			let shiftRateFromMousePosition = this.getShiftRateFromMousePosition(mouseX);
 			let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: endBottom, endY: startTop};
 			this.drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, endBottom);
@@ -189,13 +192,15 @@ export class CanvasManager {
 		return Math.round(mousePos / this.circleLineShiftSize) * this.circleLineShiftSize;
 	}
 
-	drawAllSelectedLines = () => {
-		this.horizontalPointsSelected.forEach((line: HorizontalLineType) => {
-			this.drawLineFromBoxBoundaryX(line);
-		});
-
-		this.verticalPointsSelected.forEach((line: VerticalLineType) => {
-			this.drawLineFromBoxBoundaryY(line);
+	drawAllDrawnRectangles = (e: MouseEvent) => {
+		this.rectangles.forEach((rect: GridRectangle) => {
+			this.drawFinishedRectWithCheckForMouseOnBoxBoundary(rect, e);
+			rect.horizontalPointsSelected.forEach((line: HorizontalLineType) => {
+				this.drawLineFromBoxBoundaryX(line);
+			});
+			rect.verticalPointsSelected.forEach((line: VerticalLineType) => {
+				this.drawLineFromBoxBoundaryY(line);
+			});
 		});
 	}
 
@@ -228,24 +233,23 @@ export class CanvasManager {
 	}
 
 	isItemInsideBox = (xBoundary: number, yBoundary: number) => {
-		return xBoundary >= this.rect.startX &&
-			xBoundary <= this.rect.width + this.rect.startX &&
-			yBoundary >= this.rect.startY &&
-			yBoundary <= this.rect.height + this.rect.startY;
+		return xBoundary >= this.currentRect.startX &&
+			xBoundary <= this.currentRect.width + this.currentRect.startX &&
+			yBoundary >= this.currentRect.startY &&
+			yBoundary <= this.currentRect.height + this.currentRect.startY;
 	}
 
 	undoLastDrawnLine = () => {
-		let isLastLineHorizontal = this.undoLineList.pop();
+		let isLastLineHorizontal = this.currentRect.undoLineList.pop();
 		if (isLastLineHorizontal) {
-			this.horizontalPointsSelected.pop();
+			this.currentRect.horizontalPointsSelected.pop();
 		} else {
-			this.verticalPointsSelected.pop();
+			this.currentRect.verticalPointsSelected.pop();
 		}
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		let boxStartPositionX = this.rect.startX + this.rect.width + this.canvas.offsetLeft;
-		let boxStartPositionY = this.rect.startY + this.rect.height + this.canvas.offsetTop;
-		this.drawRect(boxStartPositionX, boxStartPositionY, this.rect.width, this.rect.height);
-		this.drawAllSelectedLines();
+		let boxStartPositionX = this.currentRect.startX + this.currentRect.width + this.canvas.offsetLeft;
+		let boxStartPositionY = this.currentRect.startY + this.currentRect.height + this.canvas.offsetTop;
+		this.drawCurrentRectangle(this.currentRect, boxStartPositionX, boxStartPositionY);
 	}
 
 	buildTableFromBox = (totalCols: number, totalRows: number) => {
@@ -267,17 +271,17 @@ export class CanvasManager {
 	getItemsWithinRegion = () => {
 		let parentItem = document.getElementById(this.containerID as string);
 
-		this.horizontalPointsSelected.sort(function (a, b) {
+		this.currentRect.horizontalPointsSelected.sort(function (a, b) {
 			return a.startY - b.startY;
 		});
 
-		this.verticalPointsSelected.sort(function (a, b) {
+		this.currentRect.verticalPointsSelected.sort(function (a, b) {
 			return a.startX - b.startX;
 		});
 
-		let tableRows: string[][] = this.buildTableFromBox(this.verticalPointsSelected.length, this.horizontalPointsSelected.length);
-		this.horizontalPointsSelected.push({startX: this.rect.startX, startY: this.rect.startY + this.rect.height, endX: this.rect.startX + this.rect.width});
-		this.verticalPointsSelected.push({startX: this.rect.startX + this.rect.width, startY: this.rect.startY, endY: this.rect.startY + this.rect.height});
+		let tableRows: string[][] = this.buildTableFromBox(this.currentRect.verticalPointsSelected.length, this.currentRect.horizontalPointsSelected.length);
+		this.currentRect.horizontalPointsSelected.push({startX: this.currentRect.startX, startY: this.currentRect.startY + this.currentRect.height, endX: this.currentRect.startX + this.currentRect.width});
+		this.currentRect.verticalPointsSelected.push({startX: this.currentRect.startX + this.currentRect.width, startY: this.currentRect.startY, endY: this.currentRect.startY + this.currentRect.height});
 
 		if (parentItem != null) {
 			let divItems: NodeList = parentItem.childNodes;
@@ -290,7 +294,7 @@ export class CanvasManager {
 					let itemPositionY = itemBoundaryInfo.y + this.canvas.offsetTop + window.scrollY;
 					if (this.isItemInsideBox(itemPositionX, itemPositionY)) {
 						let gridPosition: [number, number] = this.findGridPosition(itemPositionX, itemPositionY,
-							this.horizontalPointsSelected, this.verticalPointsSelected);
+							this.currentRect.horizontalPointsSelected, this.currentRect.verticalPointsSelected);
 						let gridRowPos: number = gridPosition[0];
 						let gridColPos: number = gridPosition[1];
 						if (tableRows[gridRowPos] != undefined) {
@@ -304,8 +308,8 @@ export class CanvasManager {
 				}
 			}
 		}
-		this.horizontalPointsSelected.pop();
-		this.verticalPointsSelected.pop();
+		this.currentRect.horizontalPointsSelected.pop();
+		this.currentRect.verticalPointsSelected.pop();
 		return tableRows;
 	}
 
