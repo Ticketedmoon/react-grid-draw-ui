@@ -74,7 +74,6 @@ export class CanvasManager {
 	}
 
 	mouseUp = (e: any) => {
-		console.log("END - pageY: " + e.pageY + ", offsetTop: " + this.canvas.offsetTop);
 		this.drag = false;
 	}
 
