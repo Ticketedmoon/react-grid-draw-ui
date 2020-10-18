@@ -26,14 +26,12 @@ export class RectangleBoundaryValidator {
         });
     }
 
-    isMouseClickInsideBoxRegion = (e: MouseEvent, rectangles: GridRectangle[]): boolean => {
-        let mouseX = Math.abs(parseInt(String(e.pageX - this.canvas.offsetLeft)));
-        let mouseY = Math.abs(parseInt(String(e.pageY - this.canvas.offsetTop)));
+    isMouseClickInsideBoxRegion = (mouseX: number, mouseY: number, rectangles: GridRectangle[]): boolean => {
         return rectangles.some((rect: GridRectangle) => {
-            return mouseX >= rect.startX &&
-                mouseX <= rect.width + rect.startX &&
-                mouseY >= rect.startY &&
-                mouseY <= rect.height + rect.startY;
+            return Math.abs(mouseX) >= rect.startX &&
+                Math.abs(mouseX) <= rect.width + rect.startX &&
+                Math.abs(mouseY) >= rect.startY &&
+                Math.abs(mouseY) <= rect.height + rect.startY;
         });
     }
 
@@ -44,7 +42,7 @@ export class RectangleBoundaryValidator {
         if (isTouchingRectBoundary) {
             this.checkForCircleOnBoundary(rect, mouseX, mouseY);
         }
-        this.rectangleCreationManager.drawCurrentRectangle(rect, boxStartPositionX, boxStartPositionY);
+        this.rectangleCreationManager.drawRectangle(rect, boxStartPositionX, boxStartPositionY);
     }
 
     checkForCircleOnBoundary = (rect: GridRectangle, mouseX: number, mouseY: number) => {

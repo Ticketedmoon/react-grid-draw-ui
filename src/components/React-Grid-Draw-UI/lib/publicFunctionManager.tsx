@@ -88,8 +88,8 @@ export class PublicFunctionManager {
         let boxStartPositionX = rect.startX + rect.width + this.canvas.offsetLeft;
         let boxStartPositionY = rect.startY + rect.height + this.canvas.offsetTop;
         this.rectangleCreationManager.resetBoxProperties(rect, rect.startX, rect.startY);
-        this.rectangleCreationManager.drawCurrentRectangle(rect, boxStartPositionX, boxStartPositionY);
-        this.rectangleCreationManager.drawRectGridLines(rect);
+        this.rectangleCreationManager.drawRectangle(rect, boxStartPositionX, boxStartPositionY);
+        this.rectangleCreationManager.drawAllRectBorderLinesAndGridLines(this.rectangles);
     }
 
     private buildTableFromBox = (totalCols: number, totalRows: number) => {

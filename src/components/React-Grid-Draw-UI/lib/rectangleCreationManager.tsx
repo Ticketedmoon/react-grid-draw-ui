@@ -22,7 +22,7 @@ export class RectangleCreationManager {
         this.circleLineShiftSize = gridLineProperties.circleLineShiftSize;
     }
 
-    drawCurrentRectangle(rect: GridRectangle, pageX: number, pageY: number) {
+    drawRectangle(rect: GridRectangle, pageX: number, pageY: number) {
         rect.width = (pageX - this.canvas.offsetLeft) - rect.startX;
         rect.height = (pageY - this.canvas.offsetTop) - rect.startY;
         this.ctx.strokeStyle = 'red';
@@ -31,38 +31,52 @@ export class RectangleCreationManager {
     }
 
     drawLineAtClickedGridBoundaryPosition(e: MouseEvent, rect: GridRectangle) {
-        let startTop = rect.startY;
-        let startLeft = rect.startX;
-        let endBottom = rect.height + startTop;
-        let endRight = rect.width + startLeft;
+        let endBottom = rect.height + rect.startY;
+        let endRight = rect.width + rect.startX;
         let mouseX = e.pageX - this.canvas.offsetLeft;
         let mouseY = e.pageY - this.canvas.offsetTop;
-        let isTouchingBoundaryStartX = Math.abs(mouseX - startLeft) < this.lineClickTolerance;
+        let isTouchingBoundaryStartX = Math.abs(mouseX - rect.startX) < this.lineClickTolerance;
         let isTouchingBoundaryEndX = Math.abs(mouseX - endRight) < this.lineClickTolerance;
-        let isTouchingBoundaryStartY = Math.abs(mouseY - startTop) < this.lineClickTolerance;
+        let isTouchingBoundaryStartY = Math.abs(mouseY - rect.startY) < this.lineClickTolerance;
         let isTouchingBoundaryEndY = Math.abs(mouseY - endBottom) < this.lineClickTolerance;
 
-        // TODO: REFACTOR THIS INTO PRIVATE METHOD
         if (isTouchingBoundaryStartX || isTouchingBoundaryEndX) {
-            let line: HorizontalLineType = {
-                startX: startLeft,
-                startY: RectangleBoundaryUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize),
-                endX: endRight
-            };
-            rect.horizontalPointsSelected.push(line);
-            rect.undoLineList.push(true);
-            this.drawLineFromBoxBoundaryX(line);
+            this.addHorizontalLineAtMousePosition(rect.startX, mouseY, endRight, rect);
         } else if (isTouchingBoundaryStartY || isTouchingBoundaryEndY) {
-            let line: VerticalLineType = {
-                startX: RectangleBoundaryUtil.getShiftRateFromMousePosition(mouseX, this.circleLineShiftSize),
-                startY: startTop,
-                endY: endBottom
-            };
-            rect.verticalPointsSelected.push(line);
-            this.drawLineFromBoxBoundaryY(line);
-            rect.undoLineList.push(false);
+            this.addVerticalLineAtMousePosition(mouseX, rect.startY, endBottom, rect);
         }
     }
+
+    private addVerticalLineAtMousePosition(mouseX: number, startTop: number, endBottom: number, rect: GridRectangle) {
+        let line: VerticalLineType = {
+            startX: RectangleBoundaryUtil.getShiftRateFromMousePosition(mouseX, this.circleLineShiftSize),
+            startY: startTop,
+            endY: endBottom
+        };
+        rect.verticalPointsSelected.push(line);
+        this.drawLineFromBoxBoundaryY(line);
+        rect.undoLineList.push(false);
+    }
+
+    private addHorizontalLineAtMousePosition(startLeft: number, mouseY: number, endRight: number, rect: GridRectangle) {
+        let line: HorizontalLineType = {
+            startX: startLeft,
+            startY: RectangleBoundaryUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize),
+            endX: endRight
+        };
+        rect.horizontalPointsSelected.push(line);
+        rect.undoLineList.push(true);
+        this.drawLineFromBoxBoundaryX(line);
+    }
+
+    drawAllRectBorderLinesAndGridLines = (rectangles: GridRectangle[]) => {
+        rectangles.forEach((rect: GridRectangle) => {
+            let boxStartPositionX = rect.startX + rect.width + this.canvas.offsetLeft;
+            let boxStartPositionY = rect.startY + rect.height + this.canvas.offsetTop;
+            this.drawRectangle(rect, boxStartPositionX, boxStartPositionY);
+            this.drawRectGridLines(rect);
+        });
+    };
 
     drawRectGridLines(rect: GridRectangle) {
         rect.horizontalPointsSelected.forEach((line: HorizontalLineType) => {

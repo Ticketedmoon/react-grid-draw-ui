@@ -52,7 +52,7 @@ export class CanvasManager {
 		let rectangleWithMouseOnBorder: GridRectangle | undefined = this.rectangleBoundaryValidator.getRectForMouseOnBorder(mouseX, mouseY, this.rectangles);
 		if (rectangleWithMouseOnBorder != undefined) {
 			this.rectangleCreationManager.drawLineAtClickedGridBoundaryPosition(e, rectangleWithMouseOnBorder);
-		} else if (!this.rectangleBoundaryValidator.isMouseClickInsideBoxRegion(e, this.rectangles)) {
+		} else if (!this.rectangleBoundaryValidator.isMouseClickInsideBoxRegion(mouseX, mouseY, this.rectangles)) {
 			this.rectangleCreationManager.resetBoxProperties(this.currentRect, mouseX, mouseY);
 			this.drag = true;
 		}
@@ -64,24 +64,24 @@ export class CanvasManager {
 		}
 		this.drag = false;
 		this.currentRect = {startX: 0, startY: 0, width: 0, height: 0, verticalPointsSelected: [], horizontalPointsSelected: [], undoLineList: []}
-		this.drawAllCreatedRectangles(e);
+		this.drawAllCreatedRectangles(e.pageX, e.pageY);
 	}
 
 	mouseMove = (e: MouseEvent) => {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		if (this.drag && this.body != null) {
-			this.rectangleCreationManager.drawCurrentRectangle(this.currentRect, e.pageX, e.pageY);
+			this.rectangleCreationManager.drawRectangle(this.currentRect, e.pageX, e.pageY);
 		} else if (!this.drag) {
 			let mouseX = e.pageX - this.canvas.offsetLeft;
 			let mouseY = e.pageY - this.canvas.offsetTop;
 			this.rectangleBoundaryValidator.CheckForMouseOnBoxBoundaryOfRectAndReDraw(this.currentRect, mouseX, mouseY);
 		}
-		this.drawAllCreatedRectangles(e);
+		this.drawAllCreatedRectangles(e.pageX, e.pageY);
 	}
 
-	drawAllCreatedRectangles = (e: MouseEvent) => {
-		let mouseX = e.pageX - this.canvas.offsetLeft;
-		let mouseY = e.pageY - this.canvas.offsetTop;
+	private drawAllCreatedRectangles = (pageX: number, pageY: number) => {
+		let mouseX = pageX - this.canvas.offsetLeft;
+		let mouseY = pageY - this.canvas.offsetTop;
 		this.buildRectanglesWithMouseChecks(mouseX, mouseY);
 	}
 
