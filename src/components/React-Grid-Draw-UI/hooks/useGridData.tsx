@@ -6,7 +6,7 @@ let rectangleCreationManager: RectangleCreationManager | null = null;
 let gridOutputManager: GridOutputManager | null = null;
 
 export const useGridData = (): Function[] => {
-	const [extractGridDataFunction, setExtractGridDataFunction] = useState<() => () => string[][]>(() => () => []);
+	const [extractGridDataFunction, setExtractGridDataFunction] = useState<() => () => string[][][]>(() => () => []);
 	const [undoLastLineFunction, setUndoLastLineFunction] = useState<() => () => void>();
 
 	useEffect(() => {

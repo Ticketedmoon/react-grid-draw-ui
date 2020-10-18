@@ -1,55 +1,68 @@
 export class GridOutputManager {
 
     private containerID: string | null = null;
-    private currentRect: GridRectangle;
+    private rectangles: GridRectangle[];
     private canvas: HTMLCanvasElement;
 
-    constructor(canvas: HTMLCanvasElement, currentRect: GridRectangle) {
+    constructor(canvas: HTMLCanvasElement, rectangles: GridRectangle[], containerID: string) {
         this.canvas = canvas;
-        this.currentRect = currentRect;
+        this.rectangles = rectangles;
+        this.containerID = containerID;
     }
 
-    getItemsWithinRegion = () => {
+    getItemsWithinRegion = (): string[][][] => {
         let parentItem = document.getElementById(this.containerID as string);
-        this.currentRect.horizontalPointsSelected.sort(function (a, b) {
-            return a.startY - b.startY;
-        });
-        this.currentRect.verticalPointsSelected.sort(function (a, b) {
-            return a.startX - b.startX;
-        });
+        let listOfTables: string[][][] = [];
+        this.rectangles.forEach((rect: GridRectangle) => {
+            rect.horizontalPointsSelected.sort(function (a, b) {
+                return a.startY - b.startY;
+            });
+            rect.verticalPointsSelected.sort(function (a, b) {
+                return a.startX - b.startX;
+            });
 
-        let tableRows: string[][] = this.buildTableFromBox(this.currentRect.verticalPointsSelected.length, this.currentRect.horizontalPointsSelected.length);
-        this.currentRect.horizontalPointsSelected.push({startX: this.currentRect.startX, startY: this.currentRect.startY + this.currentRect.height, endX: this.currentRect.startX + this.currentRect.width});
-        this.currentRect.verticalPointsSelected.push({startX: this.currentRect.startX + this.currentRect.width, startY: this.currentRect.startY, endY: this.currentRect.startY + this.currentRect.height});
+            let tableRows: string[][] = this.buildTableFromBox(rect.verticalPointsSelected.length, rect.horizontalPointsSelected.length);
+            rect.horizontalPointsSelected.push({
+                startX: rect.startX,
+                startY: rect.startY + rect.height,
+                endX: rect.startX + rect.width
+            });
+            rect.verticalPointsSelected.push({
+                startX: rect.startX + rect.width,
+                startY: rect.startY,
+                endY: rect.startY + rect.height
+            });
 
-        if (parentItem != null) {
-            let divItems: NodeList = parentItem.childNodes;
-            for (let i = 0; i < divItems.length; i++) {
-                let spanItems: NodeList = divItems[i].childNodes;
-                for (let j = 0; j < spanItems.length; j++) {
-                    let item: HTMLElement = spanItems[j] as HTMLElement;
-                    let itemBoundaryInfo: DOMRect = item.getBoundingClientRect()
-                    let itemPositionX = itemBoundaryInfo.x - this.canvas.offsetLeft;
-                    let itemPositionY = itemBoundaryInfo.y + this.canvas.offsetTop + window.scrollY;
-                    if (this.isItemInsideBox(itemPositionX, itemPositionY)) {
-                        let gridPosition: [number, number] = this.findGridPosition(itemPositionX, itemPositionY,
-                            this.currentRect.horizontalPointsSelected, this.currentRect.verticalPointsSelected);
-                        let gridRowPos: number = gridPosition[0];
-                        let gridColPos: number = gridPosition[1];
-                        if (tableRows[gridRowPos] != undefined) {
-                            let tableItem: string = tableRows[gridRowPos][gridColPos];
-                            let condition: boolean = tableItem != "" && tableItem != undefined;
-                            tableRows[gridRowPos][gridColPos] = condition ? tableRows[gridRowPos][gridColPos] + " " + item.innerText : item.innerText;
-                        } else {
-                            tableRows[gridRowPos] = [];
+            if (parentItem != null) {
+                let divItems: NodeList = parentItem.childNodes;
+                for (let i = 0; i < divItems.length; i++) {
+                    let spanItems: NodeList = divItems[i].childNodes;
+                    for (let j = 0; j < spanItems.length; j++) {
+                        let item: HTMLElement = spanItems[j] as HTMLElement;
+                        let itemBoundaryInfo: DOMRect = item.getBoundingClientRect()
+                        let itemPositionX = itemBoundaryInfo.x - this.canvas.offsetLeft;
+                        let itemPositionY = itemBoundaryInfo.y + this.canvas.offsetTop + window.scrollY;
+                        if (this.isItemInsideBox(rect, itemPositionX, itemPositionY)) {
+                            let gridPosition: [number, number] = this.findGridPosition(itemPositionX, itemPositionY,
+                                rect.horizontalPointsSelected, rect.verticalPointsSelected);
+                            let gridRowPos: number = gridPosition[0];
+                            let gridColPos: number = gridPosition[1];
+                            if (tableRows[gridRowPos] != undefined) {
+                                let tableItem: string = tableRows[gridRowPos][gridColPos];
+                                let condition: boolean = tableItem != "" && tableItem != undefined;
+                                tableRows[gridRowPos][gridColPos] = condition ? tableRows[gridRowPos][gridColPos] + " " + item.innerText : item.innerText;
+                            } else {
+                                tableRows[gridRowPos] = [];
+                            }
                         }
                     }
                 }
             }
-        }
-        this.currentRect.horizontalPointsSelected.pop();
-        this.currentRect.verticalPointsSelected.pop();
-        return tableRows;
+            rect.horizontalPointsSelected.pop();
+            rect.verticalPointsSelected.pop();
+            listOfTables.push(tableRows);
+        });
+        return listOfTables;
     }
 
     private buildTableFromBox = (totalCols: number, totalRows: number) => {
@@ -106,11 +119,11 @@ export class GridOutputManager {
         return [row, col]
     }
 
-    isItemInsideBox = (xBoundary: number, yBoundary: number) => {
-        return xBoundary >= this.currentRect.startX &&
-            xBoundary <= this.currentRect.width + this.currentRect.startX &&
-            yBoundary >= this.currentRect.startY &&
-            yBoundary <= this.currentRect.height + this.currentRect.startY;
+    private isItemInsideBox = (rect: GridRectangle, xBoundary: number, yBoundary: number) => {
+        return xBoundary >= rect.startX &&
+            xBoundary <= rect.width + rect.startX &&
+            yBoundary >= rect.startY &&
+            yBoundary <= rect.height + rect.startY;
     }
 
 }

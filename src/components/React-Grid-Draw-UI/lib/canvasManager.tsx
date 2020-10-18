@@ -36,7 +36,7 @@ export class CanvasManager {
 
 		this.rectangleCreationManager = new RectangleCreationManager(this.canvas, this.ctx, this.rectangles, this.currentRect, this.lineProperties);
 		this.rectangleBoundaryValidator = new RectangleBoundaryValidator(this.canvas, this.lineProperties, this.rectangleCreationManager);
-		setCreationManagersForHook(this.rectangleCreationManager, new GridOutputManager(this.canvas, this.currentRect));
+		setCreationManagersForHook(this.rectangleCreationManager, new GridOutputManager(this.canvas, this.rectangles, this.containerID));
 	}
 
 	setCanvasSize = () => {
@@ -59,8 +59,10 @@ export class CanvasManager {
 	}
 
 	mouseUp = (e: MouseEvent) => {
+		if (this.drag) {
+			this.rectangles.push(this.currentRect);
+		}
 		this.drag = false;
-		this.rectangles.push(this.currentRect);
 		this.currentRect = {startX: 0, startY: 0, width: 0, height: 0, verticalPointsSelected: [], horizontalPointsSelected: [], undoLineList: []}
 		this.drawAllCreatedRectangles(e);
 	}
