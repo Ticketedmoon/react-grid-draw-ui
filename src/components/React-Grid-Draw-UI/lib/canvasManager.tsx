@@ -20,7 +20,7 @@ export class CanvasManager {
 		this.rectangles = [];
 		this.currentRect = {startX: 0, startY: 0, width: 0, height: 0, horizontalPointsSelected: [], verticalPointsSelected: [], undoLineList: []};
 		this.rectangleCreationManager = new RectangleCreationManager(this.canvas, this.ctx, this.rectangles, this.currentRect, lineProperties);
-		this.rectangleBoundaryValidator = new RectangleBoundaryValidator(this.canvas, this.currentRect, lineProperties, this.rectangleCreationManager);
+		this.rectangleBoundaryValidator = new RectangleBoundaryValidator(this.canvas,  lineProperties, this.rectangleCreationManager);
 		this.lineProperties = lineProperties;
 	}
 
@@ -35,7 +35,7 @@ export class CanvasManager {
 		this.setCanvasSize();
 
 		this.rectangleCreationManager = new RectangleCreationManager(this.canvas, this.ctx, this.rectangles, this.currentRect, this.lineProperties);
-		this.rectangleBoundaryValidator = new RectangleBoundaryValidator(this.canvas, this.currentRect, this.lineProperties, this.rectangleCreationManager);
+		this.rectangleBoundaryValidator = new RectangleBoundaryValidator(this.canvas, this.lineProperties, this.rectangleCreationManager);
 		setCreationManagersForHook(this.rectangleCreationManager, new GridOutputManager(this.canvas, this.currentRect));
 	}
 
@@ -47,16 +47,12 @@ export class CanvasManager {
 	}
 
 	mouseDown = (e: MouseEvent) => {
-		let startTop = this.currentRect.startY;
-		let startLeft = this.currentRect.startX;
-		let endBottom = this.currentRect.height + startTop;
-		let endRight = this.currentRect.width + startLeft;
 		let mouseX = e.offsetX;
 		let mouseY = e.offsetY - this.canvas.offsetTop;
-
-		if (this.rectangleBoundaryValidator.isMouseOnBoundaryOfBox(mouseX, startLeft, endRight, mouseY, startTop, endBottom)) {
-			this.rectangleCreationManager.drawLineAtClickedGridBoundaryPosition(e);
-		} else if (!this.rectangleBoundaryValidator.isMouseClickInsideBoxRegion(e)) {
+		let rectangleWithMouseOnBorder: GridRectangle | undefined = this.rectangleBoundaryValidator.getRectForMouseOnBorder(mouseX, mouseY, this.rectangles);
+		if (rectangleWithMouseOnBorder != undefined) {
+			this.rectangleCreationManager.drawLineAtClickedGridBoundaryPosition(e, rectangleWithMouseOnBorder);
+		} else if (!this.rectangleBoundaryValidator.isMouseClickInsideBoxRegion(e, this.rectangles)) {
 			this.rectangleCreationManager.resetBoxProperties(this.currentRect, mouseX, mouseY);
 			this.drag = true;
 		}

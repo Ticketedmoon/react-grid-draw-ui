@@ -32,11 +32,11 @@ export class RectangleCreationManager {
         this.ctx.strokeRect(rect.startX, rect.startY, rect.width, rect.height);
     }
 
-    drawLineAtClickedGridBoundaryPosition(e: MouseEvent) {
-        let startTop = this.currentRect.startY;
-        let startLeft = this.currentRect.startX;
-        let endBottom = this.currentRect.height + startTop;
-        let endRight = this.currentRect.width + startLeft;
+    drawLineAtClickedGridBoundaryPosition(e: MouseEvent, rect: GridRectangle) {
+        let startTop = rect.startY;
+        let startLeft = rect.startX;
+        let endBottom = rect.height + startTop;
+        let endRight = rect.width + startLeft;
         let mouseX = e.pageX - this.canvas.offsetLeft;
         let mouseY = e.pageY - this.canvas.offsetTop;
         let isTouchingBoundaryStartX = Math.abs(mouseX - startLeft) < this.lineClickTolerance;
@@ -51,8 +51,8 @@ export class RectangleCreationManager {
                 startY: RectangleBoundaryUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize),
                 endX: endRight
             };
-            this.currentRect.horizontalPointsSelected.push(line);
-            this.currentRect.undoLineList.push(true);
+            rect.horizontalPointsSelected.push(line);
+            rect.undoLineList.push(true);
             this.drawLineFromBoxBoundaryX(line);
         } else if (isTouchingBoundaryStartY || isTouchingBoundaryEndY) {
             let line: VerticalLineType = {
@@ -60,9 +60,9 @@ export class RectangleCreationManager {
                 startY: startTop,
                 endY: endBottom
             };
-            this.currentRect.verticalPointsSelected.push(line);
+            rect.verticalPointsSelected.push(line);
             this.drawLineFromBoxBoundaryY(line);
-            this.currentRect.undoLineList.push(false);
+            rect.undoLineList.push(false);
         }
     }
 
