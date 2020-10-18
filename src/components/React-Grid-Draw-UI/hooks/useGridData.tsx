@@ -1,18 +1,16 @@
 import {useEffect, useState} from "react";
-import {RectangleCreationManager} from "../lib/rectangleCreationManager";
-import {GridOutputManager} from "../lib/gridOutputManager";
+import {PublicFunctionManager} from "../lib/publicFunctionManager";
 
-let rectangleCreationManager: RectangleCreationManager | null = null;
-let gridOutputManager: GridOutputManager | null = null;
+let gridOutputManager: PublicFunctionManager | null = null;
 
 export const useGridData = (): Function[] => {
 	const [extractGridDataFunction, setExtractGridDataFunction] = useState<() => () => string[][][]>(() => () => []);
 	const [undoLastLineFunction, setUndoLastLineFunction] = useState<() => () => void>();
 
 	useEffect(() => {
-		if (rectangleCreationManager != null && gridOutputManager != null) {
+		if (gridOutputManager != null) {
 			setExtractGridDataFunction(() => () => gridOutputManager != null ? gridOutputManager.getItemsWithinRegion() : []);
-			setUndoLastLineFunction(() => () => rectangleCreationManager != null ? rectangleCreationManager.undoLastDrawnLine() : () => {});
+			setUndoLastLineFunction(() => () => gridOutputManager != null ? gridOutputManager.undoLastDrawnLineForLatestRectangle() : () => {});
 		} else {
 			throw "Something went wrong with the useGridData hook - If this issue persists, please contact library support.";
 		}
@@ -25,7 +23,6 @@ export const useGridData = (): Function[] => {
 	}
 }
 
-export const setCreationManagersForHook = (inputRectangleCreationManager: RectangleCreationManager, inputGridOutputManager: GridOutputManager) => {
-	rectangleCreationManager = inputRectangleCreationManager;
+export const setCreationManagersForHook = (inputGridOutputManager: PublicFunctionManager) => {
 	gridOutputManager = inputGridOutputManager;
 }

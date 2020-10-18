@@ -1,15 +1,21 @@
-export class GridOutputManager {
+import {RectangleCreationManager} from "./rectangleCreationManager";
 
-    private containerID: string | null = null;
-    private rectangles: GridRectangle[];
+export class PublicFunctionManager {
+
     private canvas: HTMLCanvasElement;
 
-    constructor(canvas: HTMLCanvasElement, rectangles: GridRectangle[], containerID: string) {
+    private readonly containerID: string | null = null;
+    private readonly rectangleCreationManager: RectangleCreationManager;
+    private readonly rectangles: GridRectangle[];
+
+    constructor(canvas: HTMLCanvasElement, rectangles: GridRectangle[], containerID: string, rectangleCreationManager: RectangleCreationManager) {
         this.canvas = canvas;
         this.rectangles = rectangles;
         this.containerID = containerID;
+        this.rectangleCreationManager = rectangleCreationManager;
     }
 
+    // TODO refactor this method
     getItemsWithinRegion = (): string[][][] => {
         let parentItem = document.getElementById(this.containerID as string);
         let listOfTables: string[][][] = [];
@@ -63,6 +69,27 @@ export class GridOutputManager {
             listOfTables.push(tableRows);
         });
         return listOfTables;
+    }
+
+    undoLastDrawnLineForLatestRectangle = () => {
+        // TODO: change hard-coded index to be a int parameter that user can choose - so if they choose the 2th-index rectangle
+        //  We will remove lines from that rectangle.
+        let rect: GridRectangle = this.rectangles[this.rectangles.length-1];
+        this.undoLastDrawnLineForRectangle(rect);
+    }
+
+    private undoLastDrawnLineForRectangle = (rect: GridRectangle) => {
+        let isLastLineHorizontal = rect.undoLineList.pop();
+        if (isLastLineHorizontal) {
+            rect.horizontalPointsSelected.pop();
+        } else {
+            rect.verticalPointsSelected.pop();
+        }
+        let boxStartPositionX = rect.startX + rect.width + this.canvas.offsetLeft;
+        let boxStartPositionY = rect.startY + rect.height + this.canvas.offsetTop;
+        this.rectangleCreationManager.resetBoxProperties(rect, rect.startX, rect.startY);
+        this.rectangleCreationManager.drawCurrentRectangle(rect, boxStartPositionX, boxStartPositionY);
+        this.rectangleCreationManager.drawRectGridLines(rect);
     }
 
     private buildTableFromBox = (totalCols: number, totalRows: number) => {

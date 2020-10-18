@@ -2,7 +2,6 @@ import {RectangleBoundaryUtil} from "./rectangleBoundaryUtil";
 
 export class RectangleCreationManager {
 
-    private readonly rectangles: GridRectangle[];
     private readonly currentRect: GridRectangle;
     private ctx: CanvasRenderingContext2D;
     private canvas: HTMLCanvasElement;
@@ -12,12 +11,11 @@ export class RectangleCreationManager {
     private readonly contextLineWidth: number
     private readonly circleLineShiftSize: number;
 
-    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, rectangles: GridRectangle[],
-                currentRect: GridRectangle, gridLineProperties: ReactGridDrawLineRequiredProperties) {
+    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, currentRect: GridRectangle,
+                gridLineProperties: ReactGridDrawLineRequiredProperties) {
         this.canvas = canvas;
         this.ctx = ctx;
         this.currentRect = currentRect;
-        this.rectangles = rectangles
         this.lineClickTolerance = gridLineProperties.lineClickTolerance;
         this.selectCircleSize = gridLineProperties.selectCircleSize;
         this.contextLineWidth = gridLineProperties.contextLineWidth;
@@ -66,6 +64,15 @@ export class RectangleCreationManager {
         }
     }
 
+    drawRectGridLines(rect: GridRectangle) {
+        rect.horizontalPointsSelected.forEach((line: HorizontalLineType) => {
+            this.drawLineFromBoxBoundaryX(line);
+        });
+        rect.verticalPointsSelected.forEach((line: VerticalLineType) => {
+            this.drawLineFromBoxBoundaryY(line);
+        });
+    }
+
     drawSelectableCircleOnBoxBoundary = (mouseX: number, mouseY: number) => {
         this.ctx.fillStyle = 'red';
         this.ctx.beginPath();
@@ -99,18 +106,4 @@ export class RectangleCreationManager {
         rect.startX = startX;
         rect.startY = startY;
     }
-
-    undoLastDrawnLine = () => {
-        let isLastLineHorizontal = this.currentRect.undoLineList.pop();
-        if (isLastLineHorizontal) {
-            this.currentRect.horizontalPointsSelected.pop();
-        } else {
-            this.currentRect.verticalPointsSelected.pop();
-        }
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        let boxStartPositionX = this.currentRect.startX + this.currentRect.width + this.canvas.offsetLeft;
-        let boxStartPositionY = this.currentRect.startY + this.currentRect.height + this.canvas.offsetTop;
-        this.drawCurrentRectangle(this.currentRect, boxStartPositionX, boxStartPositionY);
-    }
-
 }
