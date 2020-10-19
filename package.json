@@ -1,7 +1,7 @@
 {
   "name": "react-grid-draw-ui",
   "version": "1.0.0",
-  "description": "A public React NPM library that enables developers to draw a grid on top of their web page UI and use the contents within a 2D array data structure.",
+  "description": "A public React NPM library that enables developers to draw grid(s) on top of their web page UI and use the contents within a 2D array data structure.",
   "main": "index.tsx",
   "scripts": {
     "build-dev": "./node_modules/.bin/webpack -p --env=development",
