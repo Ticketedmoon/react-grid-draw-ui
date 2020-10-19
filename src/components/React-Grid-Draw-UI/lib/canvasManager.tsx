@@ -64,7 +64,7 @@ export class CanvasManager {
 		}
 		this.drag = false;
 		this.currentRect = {startX: 0, startY: 0, width: 0, height: 0, verticalPointsSelected: [], horizontalPointsSelected: [], undoLineList: []}
-		this.drawAllCreatedRectangles(e.pageX, e.pageY);
+		this.drawAllCreatedRectangles(e);
 	}
 
 	mouseMove = (e: MouseEvent) => {
@@ -74,20 +74,21 @@ export class CanvasManager {
 		} else if (!this.drag) {
 			let mouseX = e.pageX - this.canvas.offsetLeft;
 			let mouseY = e.pageY - this.canvas.offsetTop;
-			this.rectangleBoundaryValidator.CheckForMouseOnBoxBoundaryOfRectAndReDraw(this.currentRect, mouseX, mouseY);
+			this.rectangleBoundaryValidator.showMouseCursorAsPointer(e, 'auto');
+			this.rectangleBoundaryValidator.CheckForMouseOnBoxBoundaryOfRectAndReDraw(this.currentRect, mouseX, mouseY, e);
 		}
-		this.drawAllCreatedRectangles(e.pageX, e.pageY);
+		this.drawAllCreatedRectangles(e);
 	}
 
-	private drawAllCreatedRectangles = (pageX: number, pageY: number) => {
-		let mouseX = pageX - this.canvas.offsetLeft;
-		let mouseY = pageY - this.canvas.offsetTop;
-		this.buildRectanglesWithMouseChecks(mouseX, mouseY);
+	private drawAllCreatedRectangles = (e: MouseEvent) => {
+		let mouseX = e.pageX - this.canvas.offsetLeft;
+		let mouseY = e.pageY - this.canvas.offsetTop;
+		this.buildRectanglesWithMouseChecks(mouseX, mouseY, e);
 	}
 
-	private buildRectanglesWithMouseChecks(mouseX: number, mouseY: number) {
+	private buildRectanglesWithMouseChecks(mouseX: number, mouseY: number, e: MouseEvent) {
 		this.rectangles.forEach((rect: GridRectangle) => {
-			this.rectangleBoundaryValidator.CheckForMouseOnBoxBoundaryOfRectAndReDraw(rect, mouseX, mouseY);
+			this.rectangleBoundaryValidator.CheckForMouseOnBoxBoundaryOfRectAndReDraw(rect, mouseX, mouseY, e);
 			this.rectangleCreationManager.drawRectGridLines(rect);
 		});
 	}

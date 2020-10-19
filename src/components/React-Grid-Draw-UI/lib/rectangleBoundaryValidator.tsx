@@ -35,11 +35,12 @@ export class RectangleBoundaryValidator {
         });
     }
 
-    CheckForMouseOnBoxBoundaryOfRectAndReDraw(rect: GridRectangle, mouseX: number, mouseY: number) {
+    CheckForMouseOnBoxBoundaryOfRectAndReDraw(rect: GridRectangle, mouseX: number, mouseY: number, e: MouseEvent) {
         let boxStartPositionX = rect.startX + rect.width + this.canvas.offsetLeft;
         let boxStartPositionY = rect.startY + rect.height + this.canvas.offsetTop;
         let isTouchingRectBoundary: boolean = this.checkForMouseOnBorderOfSingleRect(rect, mouseX, mouseY);
         if (isTouchingRectBoundary) {
+            this.showMouseCursorAsPointer(e, "pointer");
             this.checkForCircleOnBoundary(rect, mouseX, mouseY);
         }
         this.rectangleCreationManager.drawRectangle(rect, boxStartPositionX, boxStartPositionY);
@@ -54,16 +55,20 @@ export class RectangleBoundaryValidator {
         let isTouchingBoundaryEndX = Math.abs(mouseX - endRight) < this.lineClickTolerance;
         let isTouchingBoundaryStartY = Math.abs(mouseY - startTop) < this.lineClickTolerance;
         let isTouchingBoundaryEndY = Math.abs(mouseY - endBottom) < this.lineClickTolerance;
-        // TODO: refactor each conditional body into private method
-        if (isTouchingBoundaryStartX && mouseY > rect.startY && mouseY < rect.startY + rect.height) {
+        if (isTouchingBoundaryStartX && mouseY > rect.startY && mouseY <= rect.startY + rect.height) {
             this.previewCircleAndLineForLeftBorderOnHover(mouseY, startLeft, endRight);
-        } else if (isTouchingBoundaryEndX && mouseY > rect.startY && mouseY < rect.startY + rect.height) {
+        } else if (isTouchingBoundaryEndX && mouseY > rect.startY && mouseY <= rect.startY + rect.height) {
             this.previewCircleAndLineForRightBorderOnHover(mouseY, startLeft, endRight);
-        } else if (isTouchingBoundaryStartY && mouseX > rect.startX && mouseX < rect.startX + rect.width) {
+        } else if (isTouchingBoundaryStartY && mouseX > rect.startX && mouseX <= rect.startX + rect.width) {
             this.previewCircleAndLineForTopBorderOnHover(mouseX, startTop, endBottom);
-        } else if (isTouchingBoundaryEndY && mouseX > rect.startX && mouseX < rect.startX + rect.width) {
+        } else if (isTouchingBoundaryEndY && mouseX > rect.startX && mouseX <= rect.startX + rect.width) {
             this.previewCircleAndLineForBottomBorderOnHover(mouseX, endBottom, startTop);
         }
+    }
+
+    showMouseCursorAsPointer(e: MouseEvent, pointerType: string) {
+        let target: HTMLCanvasElement = e.target as HTMLCanvasElement;
+        target.style.cursor = pointerType;
     }
 
     private previewCircleAndLineForBottomBorderOnHover(mouseX: number, endBottom: number, startTop: number) {
@@ -100,8 +105,8 @@ export class RectangleBoundaryValidator {
         let endBottom = rect.height + startTop;
         let endRight = rect.width + startLeft;
 
-        let isTouchingBoundaryX: boolean = Math.abs(mouseX - startLeft) < this.lineClickTolerance || Math.abs(mouseX - endRight) < this.lineClickTolerance;
-        let isTouchingBoundaryY: boolean = Math.abs(mouseY - startTop) < this.lineClickTolerance || Math.abs(mouseY - endBottom) < this.lineClickTolerance;
+        let isTouchingBoundaryX: boolean = Math.abs(mouseX - startLeft) <= this.lineClickTolerance || Math.abs(mouseX - endRight) <= this.lineClickTolerance;
+        let isTouchingBoundaryY: boolean = Math.abs(mouseY - startTop) <= this.lineClickTolerance || Math.abs(mouseY - endBottom) <= this.lineClickTolerance;
         let isWithinXBoundaryOfBox: boolean = mouseX >= startLeft && mouseX <= endRight;
         let isWithinYBoundaryOfBox: boolean = mouseY >= startTop && mouseY <= endBottom;
         return (isTouchingBoundaryX && isWithinYBoundaryOfBox) || (isTouchingBoundaryY && isWithinXBoundaryOfBox);
