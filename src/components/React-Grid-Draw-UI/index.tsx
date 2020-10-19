@@ -17,7 +17,8 @@ export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalPropert
 		lineClickTolerance: props.lineClickTolerance as number,
 		selectCircleSize: props.selectCircleSize as number,
 		circleLineShiftSize: props.circleLineShiftSize as number,
-		contextLineWidth: props.contextLineWidth as number
+		contextLineWidth: props.contextLineWidth as number,
+		lineColour: props.lineColour as string
 	}));
 
 	useEffect(() => {
@@ -54,5 +55,6 @@ ReactGridDrawUI.defaultProps = {
 	lineClickTolerance: 15,
 	selectCircleSize: 3,
 	circleLineShiftSize: 10,
-	contextLineWidth: 1
+	contextLineWidth: 1,
+	lineColour: "red"
 }

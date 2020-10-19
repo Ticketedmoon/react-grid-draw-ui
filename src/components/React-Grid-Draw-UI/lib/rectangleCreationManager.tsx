@@ -10,6 +10,7 @@ export class RectangleCreationManager {
     private readonly selectCircleSize: number;
     private readonly contextLineWidth: number
     private readonly circleLineShiftSize: number;
+    private readonly lineColour: string;
 
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, currentRect: GridRectangle,
                 gridLineProperties: ReactGridDrawLineRequiredProperties) {
@@ -20,12 +21,13 @@ export class RectangleCreationManager {
         this.selectCircleSize = gridLineProperties.selectCircleSize;
         this.contextLineWidth = gridLineProperties.contextLineWidth;
         this.circleLineShiftSize = gridLineProperties.circleLineShiftSize;
+        this.lineColour = gridLineProperties.lineColour;
     }
 
     drawRectangle(rect: GridRectangle, pageX: number, pageY: number) {
         rect.width = (pageX - this.canvas.offsetLeft) - rect.startX;
         rect.height = (pageY - this.canvas.offsetTop) - rect.startY;
-        this.ctx.strokeStyle = 'red';
+        this.ctx.strokeStyle = this.lineColour;
         this.ctx.lineWidth = this.contextLineWidth;
         this.ctx.strokeRect(rect.startX, rect.startY, rect.width, rect.height);
     }
@@ -88,7 +90,7 @@ export class RectangleCreationManager {
     }
 
     drawSelectableCircleOnBoxBoundary = (mouseX: number, mouseY: number) => {
-        this.ctx.fillStyle = 'red';
+        this.ctx.fillStyle = this.lineColour;
         this.ctx.beginPath();
         this.ctx.arc(mouseX, mouseY, this.selectCircleSize, 0, Math.PI * 2);
         this.ctx.closePath();
@@ -96,7 +98,7 @@ export class RectangleCreationManager {
     }
 
     drawLineFromBoxBoundaryX = (line: HorizontalLineType) => {
-        this.ctx.fillStyle = 'red';
+        this.ctx.fillStyle = this.lineColour;
         this.ctx.beginPath();
         this.ctx.lineWidth = this.contextLineWidth;
         this.ctx.moveTo(line.startX, line.startY);
@@ -106,7 +108,7 @@ export class RectangleCreationManager {
     }
 
     drawLineFromBoxBoundaryY = (line: VerticalLineType) => {
-        this.ctx.fillStyle = 'red';
+        this.ctx.fillStyle = this.lineColour;
         this.ctx.lineWidth = this.contextLineWidth;
         this.ctx.beginPath();
         this.ctx.moveTo(line.startX, line.startY);
