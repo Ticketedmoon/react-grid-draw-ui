@@ -14,3 +14,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
+
+.application-container {
+    width: 50%;
+}

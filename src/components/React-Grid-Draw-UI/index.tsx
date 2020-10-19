@@ -41,11 +41,9 @@ export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalPropert
 
 	return (
 		<Fragment>
-			<div className={style["page-container"]}>
-				<div id="canvas-wrap" className={style["canvas-wrap"]}>
-					{props.children}
-					<canvas id="canvas"/>
-				</div>
+			<div id="canvas-wrap" className={style["canvas-wrap"]}>
+				{props.children}
+				<canvas id="canvas"/>
 			</div>
 		</Fragment>
 	);

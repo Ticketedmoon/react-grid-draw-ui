@@ -10,7 +10,7 @@ const App: React.FunctionComponent = () => {
 	const [getGridData, undoLastRect, undoLastLine]: Function[] = useGridData();
 
 	return (
-		<div>
+		<div className={style["application-container"]}>
 			<ReactGridDrawUI>
 				<div className={style["drawable-container"]} id={"container"}>
 					<div>
