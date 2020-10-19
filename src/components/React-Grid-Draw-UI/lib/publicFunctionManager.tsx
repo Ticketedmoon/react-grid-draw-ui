@@ -71,6 +71,12 @@ export class PublicFunctionManager {
         return listOfTables;
     }
 
+    undoLastRectangle = () => {
+        this.rectangles.pop();
+        this.rectangleCreationManager.resetBoxProperties({} as GridRectangle, 0, 0);
+        this.rectangleCreationManager.drawAllRectBorderLinesAndGridLines(this.rectangles);
+    };
+
     undoLastDrawnLineForLatestRectangle = () => {
         // TODO: change hard-coded index to be a int parameter that user can choose - so if they choose the 2th-index rectangle
         //  We will remove lines from that rectangle.

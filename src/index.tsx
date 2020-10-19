@@ -7,7 +7,7 @@ const style = require("./style.module.css");
 
 const App: React.FunctionComponent = () => {
 
-	const [getGridData, undoLastLine]: Function[] = useGridData();
+	const [getGridData, undoLastRect, undoLastLine]: Function[] = useGridData();
 
 	return (
 		<div>
@@ -51,7 +51,8 @@ const App: React.FunctionComponent = () => {
 				</div>
 			</ReactGridDrawUI>
 			<button onClick={() => console.log(getGridData())}> test </button>
-			<button onClick={() => undoLastLine()}> undo </button>
+			<button onClick={() => undoLastLine()}> undo last line </button>
+			<button onClick={() => undoLastRect()}> undo last rect </button>
 		</div>
 	)
 };
