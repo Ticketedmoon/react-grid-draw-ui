@@ -1,9 +1,14 @@
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 module.exports = (mode) => {
     return {
         mode: mode || "development", // Default to development if nothing passed
         entry: "./src/index.tsx",
         output: {
-            filename: 'bundle.js'
+            filename: 'react-grid-draw-ui.js',
+            library: "react-grid-draw-ui",
+            libraryTarget: "umd",
+            publicPath: "dist",
         },
         devServer: {
             publicPath: 'https://localhost:3000/dist',
@@ -22,6 +27,14 @@ module.exports = (mode) => {
             ]
         },
         performance: { hints: false },
+        plugins:[
+            new MiniCssExtractPlugin(
+                {
+                    filename: "[name].css",
+                    chunkFilename: "[id].css"
+                }
+            ),
+        ],
         module: {
             rules: [
                 {
@@ -34,9 +47,7 @@ module.exports = (mode) => {
                 {
                     test: /\.module.css$/i,
                     use: [
-                        {
-                            loader: 'style-loader',
-                        },
+                        mode !== "development" ? MiniCssExtractPlugin.loader : { loader: "style-loader"},
                         {
                             loader: "css-loader",
                             options: {
@@ -46,7 +57,8 @@ module.exports = (mode) => {
                                     localIdentName: "[name]_[local]_[hash:base64:5]",
                                 },
                             }
-                        }],
+                        }
+                        ],
                     exclude: /(node_modules)/,
                 },
                 {
