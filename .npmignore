@@ -1,3 +1,4 @@
 src/
 webpack.config.js
 .gitignore
+.babelrc
