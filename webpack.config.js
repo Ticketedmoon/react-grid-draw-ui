@@ -5,9 +5,8 @@ module.exports = (mode) => {
         output: {
             filename: 'react-grid-draw-ui.js',
             library: "react-grid-draw-ui",
-            libraryTarget: "umd",
-            publicPath: "dist",
-            umdNamedDefine: true
+            libraryTarget: "commonjs2",
+            publicPath: "/dist/",
         },
         devServer: {
             publicPath: 'https://localhost:3000/dist',
@@ -57,6 +56,21 @@ module.exports = (mode) => {
                     use: ['style-loader', 'css-loader'],
                 },
             ]
+        },
+        externals: {
+            // Don't bundle react or react-dom
+            react: {
+                commonjs: "react",
+                commonjs2: "react",
+                amd: "React",
+                root: "React"
+            },
+            "react-dom": {
+                commonjs: "react-dom",
+                commonjs2: "react-dom",
+                amd: "ReactDOM",
+                root: "ReactDOM"
+            }
         }
     }
 };

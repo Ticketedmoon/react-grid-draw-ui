@@ -11,7 +11,6 @@
     "build-dev": "./node_modules/.bin/webpack -p --env=development",
     "build-prod": "./node_modules/.bin/webpack -p --env=production",
     "dev": "./node_modules/.bin/webpack-dev-server --env=development",
-    "prepublish": "rm -rf ./dist && npm run build",
     "transpile": "babel src -d dist --copy-files"
   },
   "repository": {
@@ -30,22 +29,27 @@
     "dist"
   ],
   "homepage": "https://github.com/ShaneCreedon/React-grid-draw-ui#readme",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
-    "@babel/core": "^7.11.6",
+    "@babel/core": "^7.12.3",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
     "@babel/preset-env": "^7.11.5",
     "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
-    "@types/node": "^14.14.0",
-    "@types/react": "^16.9.49",
+    "@types/node": "^14.14.2",
+    "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
+    "@types/styled-components": "^5.1.4",
     "babel-cli": "^6.26.0",
     "babel-loader": "^8.1.0",
     "css-loader": "^4.3.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "style-loader": "^1.2.1",
+    "style-loader": "^1.3.0",
+    "styled-components": "^5.2.0",
     "typescript": "^4.0.3",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
