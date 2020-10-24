@@ -57,7 +57,15 @@ const App: React.FunctionComponent = () => {
 	)
 };
 
-ReactDOM.render(
-	<App/>,
-	document.getElementById('root')
-);
+ReactGridDrawUI.defaultProps = {
+	lineClickTolerance: 15,
+	selectCircleSize: 3,
+	circleLineShiftSize: 10,
+	contextLineWidth: 1,
+	lineColour: "red"
+}
+
+export {
+	ReactGridDrawUI,
+	useGridData
+}

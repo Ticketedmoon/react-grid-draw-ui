@@ -3,10 +3,10 @@ module.exports = (mode) => {
         mode: mode || "development", // Default to development if nothing passed
         entry: "./src/index.tsx",
         output: {
-            filename: 'react-grid-draw-ui.js',
+            filename: 'index.js',
             library: "react-grid-draw-ui",
             libraryTarget: "commonjs2",
-            publicPath: "/dist/",
+            publicPath: "/",
         },
         devServer: {
             publicPath: 'https://localhost:3000/dist',
@@ -31,7 +31,7 @@ module.exports = (mode) => {
                     test: /\.(ts|js)x?$/,
                     exclude: /node_modules/,
                     use: {
-                        loader: "babel-loader"
+                        loader: "ts-loader"
                     }
                 },
                 {
