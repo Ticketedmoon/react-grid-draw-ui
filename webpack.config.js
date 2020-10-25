@@ -1,7 +1,7 @@
 module.exports = (mode) => {
     return {
         mode: mode || "development", // Default to development if nothing passed
-        entry: "./src/index.tsx",
+        entry: "./demo/demo.tsx",
         output: {
             filename: 'index.js'
         },

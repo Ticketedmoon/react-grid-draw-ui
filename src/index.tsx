@@ -1,62 +1,74 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import {ReactGridDrawUI, useGridData} from "./components/React-Grid-Draw-UI";
+import React, {
+	CSSProperties,
+	Fragment,
+	FunctionComponent,
+	PropsWithChildren,
+	ReactElement,
+	ReactNode,
+	useEffect,
+	useState
+} from "react";
+import {useGridData} from "./hooks/useGridData";
+import {CanvasManager} from "./lib/canvasManager";
 
-const style = require("./style.module.css");
+const canvasWrapStyle: CSSProperties = {
+	display: "flex",
+	margin: "0 auto"
+}
 
-const App: React.FunctionComponent = () => {
+const canvasStyle: CSSProperties = {
+	zIndex: 10000,
+	width: "inherit",
+	position: "absolute"
+}
 
-	const [getGridData, undoLastRect, undoLastLine]: Function[] = useGridData();
+const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalProperties> = (props: PropsWithChildren<ReactGridDrawLineOptionalProperties>): ReactElement => {
+
+	const [canvasManger, setCanvasManager] = useState<CanvasManager>(new CanvasManager({
+		lineClickTolerance: props.lineClickTolerance as number,
+		selectCircleSize: props.selectCircleSize as number,
+		circleLineShiftSize: props.circleLineShiftSize as number,
+		contextLineWidth: props.contextLineWidth as number,
+		lineColour: props.lineColour as string
+	}));
+
+	useEffect(() => {
+		let containerID: string = getContainerID();
+		canvasManger.createCanvas(containerID);
+	}, []);
+
+	const getContainerID = () => {
+		let children = props.children as React.ReactNodeArray;
+		if (children.length > 1) {
+			throw "children of element <ReactGridDrawUI> greater than 1";
+		}
+		let drawingContainer = children as ReactNode as {props: {id: string}};
+		let containerID = drawingContainer.props.id;
+		if (containerID == null) {
+			throw "child of element <ReactGridDrawUI> has no ID";
+		}
+		return containerID;
+	}
 
 	return (
-		<div className={style["application-container"]}>
-			<ReactGridDrawUI>
-				<div className={style["drawable-container"]} id={"container"}>
-					<div>
-						<div className={style["test-container"]}>
-							<p> test-A </p>
-						</div>
-						<div className={style["test-container1"]}>
-							<p> test-B </p>
-						</div>
-						<div className={style["test-container1"]}>
-							<p> test-C </p>
-						</div>
-					</div>
-
-					<div>
-						<div className={style["test-container"]}>
-							<p> test-D </p>
-						</div>
-						<div className={style["test-container1"]}>
-							<p> test-E </p>
-						</div>
-						<div className={style["test-container1"]}>
-							<p> test-F </p>
-						</div>
-					</div>
-
-					<div>
-						<div className={style["test-container"]}>
-							<p> test-G </p>
-						</div>
-						<div className={style["test-container1"]}>
-							<p> test-H </p>
-						</div>
-						<div className={style["test-container1"]}>
-							<p> test-I </p>
-						</div>
-					</div>
-				</div>
-			</ReactGridDrawUI>
-			<button onClick={() => console.log(getGridData())}> test </button>
-			<button onClick={() => undoLastLine()}> undo last line </button>
-			<button onClick={() => undoLastRect()}> undo last rect </button>
-		</div>
-	)
+		<Fragment>
+			<div id="canvas-wrap" style={canvasWrapStyle}>
+				{props.children}
+				<canvas id="canvas" style={canvasStyle}/>
+			</div>
+		</Fragment>
+	);
 };
 
-ReactDOM.render(
-	<App/>,
-	document.getElementById('root')
-);
+ReactGridDrawUI.defaultProps = {
+	lineClickTolerance: 15,
+	selectCircleSize: 3,
+	circleLineShiftSize: 10,
+	contextLineWidth: 1,
+	lineColour: "red"
+}
+
+export {
+	ReactGridDrawUI,
+	useGridData
+}

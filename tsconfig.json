@@ -6,7 +6,7 @@
     "declarationMap": false,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
     "outDir": "./dist",                        /* Redirect output structure to the directory. */
     "noEmit": false,                        /* Do not emit outputs. */
-    "rootDir": "./src",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
 
     /* Strict Type-Checking Options */
     "strict": true,                           /* Enable all strict type-checking options. */
