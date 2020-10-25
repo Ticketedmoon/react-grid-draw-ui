@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {ReactGridDrawUI} from "./components/React-Grid-Draw-UI";
-import {useGridData} from "./components/React-Grid-Draw-UI/hooks/useGridData";
+import {ReactGridDrawUI, useGridData} from "./components/React-Grid-Draw-UI";
 
 const style = require("./style.module.css");
 
@@ -57,15 +56,7 @@ const App: React.FunctionComponent = () => {
 	)
 };
 
-ReactGridDrawUI.defaultProps = {
-	lineClickTolerance: 15,
-	selectCircleSize: 3,
-	circleLineShiftSize: 10,
-	contextLineWidth: 1,
-	lineColour: "red"
-}
-
-export {
-	ReactGridDrawUI,
-	useGridData
-}
+ReactDOM.render(
+	<App/>,
+	document.getElementById('root')
+);

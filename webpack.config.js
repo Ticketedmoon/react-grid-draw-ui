@@ -3,10 +3,7 @@ module.exports = (mode) => {
         mode: mode || "development", // Default to development if nothing passed
         entry: "./src/index.tsx",
         output: {
-            filename: 'index.js',
-            library: "react-grid-draw-ui",
-            libraryTarget: "commonjs2",
-            publicPath: "/",
+            filename: 'index.js'
         },
         devServer: {
             publicPath: 'https://localhost:3000/dist',
@@ -57,20 +54,5 @@ module.exports = (mode) => {
                 },
             ]
         },
-        externals: {
-            // Don't bundle react or react-dom
-            react: {
-                commonjs: "react",
-                commonjs2: "react",
-                amd: "React",
-                root: "React"
-            },
-            "react-dom": {
-                commonjs: "react-dom",
-                commonjs2: "react-dom",
-                amd: "ReactDOM",
-                root: "ReactDOM"
-            }
-        }
     }
 };

@@ -7,11 +7,12 @@ import React, {
 	useEffect,
 	useState
 } from "react";
+import {useGridData} from "./hooks/useGridData";
 import {CanvasManager} from "./lib/canvasManager";
 
 const style = require("./style/style.module.css");
 
-export const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalProperties> = (props: PropsWithChildren<ReactGridDrawLineOptionalProperties>): ReactElement => {
+const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalProperties> = (props: PropsWithChildren<ReactGridDrawLineOptionalProperties>): ReactElement => {
 
 	const [canvasManger, setCanvasManager] = useState<CanvasManager>(new CanvasManager({
 		lineClickTolerance: props.lineClickTolerance as number,
@@ -55,4 +56,9 @@ ReactGridDrawUI.defaultProps = {
 	circleLineShiftSize: 10,
 	contextLineWidth: 1,
 	lineColour: "red"
+}
+
+export {
+	ReactGridDrawUI,
+	useGridData
 }

@@ -48,7 +48,7 @@ export class CanvasManager {
 
 	mouseDown = (e: MouseEvent) => {
 		let mouseX = e.offsetX;
-		let mouseY = e.offsetY - this.canvas.offsetTop;
+		let mouseY = e.offsetY;
 		let rectangleWithMouseOnBorder: GridRectangle | undefined = this.rectangleBoundaryValidator.getRectForMouseOnBorder(mouseX, mouseY, this.rectangles);
 		if (rectangleWithMouseOnBorder != undefined) {
 			this.rectangleCreationManager.drawLineAtClickedGridBoundaryPosition(e, rectangleWithMouseOnBorder);
