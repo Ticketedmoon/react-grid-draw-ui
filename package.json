@@ -11,7 +11,8 @@
     "build-dev": "./node_modules/.bin/webpack -p --env=development",
     "build-prod": "./node_modules/.bin/webpack -p --env=production",
     "dev": "./node_modules/.bin/webpack-dev-server --env=development",
-    "transpile": "babel src -d dist --copy-files"
+    "transpile": "babel src -d dist --copy-files",
+    "build-lib": "./node_modules/.bin/webpack --config webpack.config.lib.prod.js -p --env=production"
   },
   "repository": {
     "type": "git",
