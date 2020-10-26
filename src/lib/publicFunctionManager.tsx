@@ -7,12 +7,14 @@ export class PublicFunctionManager {
     private readonly containerID: string | null = null;
     private readonly rectangleCreationManager: RectangleCreationManager;
     private readonly rectangles: GridRectangle[];
+    private readonly canvasRect: DOMRect;
 
     constructor(canvas: HTMLCanvasElement, rectangles: GridRectangle[], containerID: string, rectangleCreationManager: RectangleCreationManager) {
         this.canvas = canvas;
         this.rectangles = rectangles;
         this.containerID = containerID;
         this.rectangleCreationManager = rectangleCreationManager;
+        this.canvasRect = this.canvas.getBoundingClientRect();
     }
 
     // TODO refactor this method
@@ -46,9 +48,9 @@ export class PublicFunctionManager {
                     for (let j = 0; j < spanItems.length; j++) {
                         let item: HTMLElement = spanItems[j] as HTMLElement;
                         let itemBoundaryInfo: DOMRect = item.getBoundingClientRect()
-                        let itemPositionX = itemBoundaryInfo.x - this.canvas.offsetLeft;
-                        let itemPositionY = itemBoundaryInfo.y + this.canvas.offsetTop + window.scrollY;
-                        if (this.isItemInsideBox(rect, itemPositionX, itemPositionY)) {
+                        let itemPositionX = itemBoundaryInfo.left - this.canvasRect.left;
+                        let itemPositionY = itemBoundaryInfo.top - this.canvasRect.top;
+                        if (this.isItemInsideBox(rect, item, itemPositionX, itemPositionY)) {
                             let gridPosition: [number, number] = this.findGridPosition(itemPositionX, itemPositionY,
                                 rect.horizontalPointsSelected, rect.verticalPointsSelected);
                             let gridRowPos: number = gridPosition[0];
@@ -152,11 +154,12 @@ export class PublicFunctionManager {
         return [row, col]
     }
 
-    private isItemInsideBox = (rect: GridRectangle, xBoundary: number, yBoundary: number) => {
+    private isItemInsideBox = (rect: GridRectangle, item: HTMLElement, xBoundary: number, yBoundary: number) => {
+        let itemHeightMiddlePoint = item.offsetHeight / 2;
         return xBoundary >= rect.startX &&
             xBoundary <= rect.width + rect.startX &&
-            yBoundary >= rect.startY &&
-            yBoundary <= rect.height + rect.startY;
+            yBoundary + itemHeightMiddlePoint >= rect.startY &&
+            yBoundary + itemHeightMiddlePoint <= rect.height + rect.startY;
     }
 
 }

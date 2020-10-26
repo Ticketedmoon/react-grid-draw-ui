@@ -3,9 +3,6 @@
   "version": "1.0.3",
   "description": "A public React NPM library that enables developers to draw grid(s) on top of their web page UI and use the contents within a 2D array data structure.",
   "main": "./src/index.tsx",
-  "publishConfig": {
-    "access": "restricted"
-  },
   "scripts": {
     "build": "webpack",
     "build-dev": "./node_modules/.bin/webpack -p --env=development",

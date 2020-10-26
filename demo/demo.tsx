@@ -12,6 +12,9 @@ const App: React.FunctionComponent = () => {
 		<div className={style["application-container"]}>
 			<div>
 				<h2> Test </h2>
+				<h2> Test </h2>
+				<h2> Test </h2>
+				<h2> Test </h2>
 			</div>
 			<ReactGridDrawUI>
 				<div className={style["drawable-container"]} id={"container"}>
