@@ -80,7 +80,7 @@ higher values will appear more rigid.
 - `contextLineWidth` - Specifies the size of the grid lines and on-hover grid lines.
 - `lineColour` - Specifies the colour of the drawn grids. 
 
-**Default prop values**:
+## Default prop values
 
 - `lineClickTolerance`: 15
 - `selectCircleSize`: 3
