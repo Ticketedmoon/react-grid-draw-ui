@@ -6,8 +6,7 @@
 
 A sophisticated canvas-based drawing and grid-creation React component library.
 
-**Demo** 
-> Full in-depth todo/info/guidelines to be added in the future.
+**Demo:** https://shanecreedon.github.io/React-grid-draw-ui/
 
 **Prerequisites**
 - React version >= 16.8 (For hooks)
@@ -103,6 +102,7 @@ and check out the contribution guide lines or put in an issue for areas where yo
 ## Thanks
 
 A large thank you to all of those involved and supporting the project. 
+
 
  ## License
  
