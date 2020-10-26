@@ -13,7 +13,6 @@ import {CanvasManager} from "./lib/canvasManager";
 
 const canvasWrapStyle: CSSProperties = {
 	display: "flex",
-	margin: "0 auto"
 }
 
 const canvasStyle: CSSProperties = {

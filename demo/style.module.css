@@ -16,6 +16,38 @@
 }
 
 .application-container {
-    width: 50%;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.button-select-container {
+    padding-bottom: 1em;
+    display: inline-flex;
+    flex-wrap: wrap;
+}
+
+.button-select-container > button {
+    margin-right: 1em;
+}
+
+.title {
+    font-family: Calibri, serif;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+table td {
+    border: 1px solid #333;
+    height: 20px;
 }
