@@ -1,0 +1,56 @@
+{
+  "name": "react-grid-draw-ui",
+  "version": "1.0.8",
+  "description": "A public React NPM library that enables developers to draw grid(s) on top of their web page UI and use the contents within a 2D array data structure.",
+  "main": "./src/index.tsx",
+  "scripts": {
+    "build": "webpack",
+    "build-dev": "./node_modules/.bin/webpack -p --env=development",
+    "build-prod": "./node_modules/.bin/webpack -p --env=production",
+    "dev": "./node_modules/.bin/webpack-dev-server --env=development",
+    "transpile": "babel src -d dist --copy-files",
+    "build-lib": "./node_modules/.bin/webpack --config webpack.config.lib.prod.js -p --env=production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShaneCreedon/React-grid-draw-ui.git"
+  },
+  "author": {
+    "name": "Shane Creedon",
+    "url": "https://www.skybreak.app"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ShaneCreedon/React-grid-draw-ui/issues"
+  },
+  "homepage": "https://github.com/ShaneCreedon/React-grid-draw-ui#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-react": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/node": "^14.14.2",
+    "@types/react": "^16.9.53",
+    "@types/react-dom": "^16.9.8",
+    "@types/styled-components": "^5.1.4",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^4.3.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "style-loader": "^1.3.0",
+    "ts-loader": "^8.0.7",
+    "typescript": "^4.0.3",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "peerDependencies": {
+    "react-dom": "^16.13.1",
+    "react": "^16.13.1",
+    "@types/react-dom": "^16.9.8"
+  },
+  "dependencies": {}
+}
