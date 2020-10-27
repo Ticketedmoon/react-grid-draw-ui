@@ -6,7 +6,7 @@ module.exports = (mode) => {
             filename: 'index.js'
         },
         devServer: {
-            publicPath: 'https://localhost:3000/dist',
+            publicPath: 'https://localhost:3000/dist/src',
             host: "localhost",
             port: 3000,
             hot: true,

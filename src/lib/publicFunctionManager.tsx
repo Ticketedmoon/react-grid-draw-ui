@@ -48,8 +48,8 @@ export class PublicFunctionManager {
                     for (let j = 0; j < spanItems.length; j++) {
                         let item: HTMLElement = spanItems[j] as HTMLElement;
                         let itemBoundaryInfo: DOMRect = item.getBoundingClientRect()
-                        let itemPositionX = itemBoundaryInfo.left - this.canvasRect.left;
-                        let itemPositionY = itemBoundaryInfo.top - this.canvasRect.top;
+                        let itemPositionX = itemBoundaryInfo.left - this.canvasRect.left + window.scrollX;
+                        let itemPositionY = itemBoundaryInfo.top - this.canvasRect.top + window.scrollY;
                         if (this.isItemInsideBox(rect, item, itemPositionX, itemPositionY)) {
                             let gridPosition: [number, number] = this.findGridPosition(itemPositionX, itemPositionY,
                                 rect.horizontalPointsSelected, rect.verticalPointsSelected);
