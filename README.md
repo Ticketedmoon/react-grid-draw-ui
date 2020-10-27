@@ -68,6 +68,9 @@ const App = () => {
 };
 ```
 
+**Note:** Currently it is required for the div wrapped by `<ReactGridDrawUI>` to contain an `id` attribute. This can be any ID. 
+It must have a value as per how the tool currently works. Follow the example above for clarity.
+
 ## Props
 
 You can control the following props by providing values for them. If you don't, react-grid-draw-ui will manage and default them for you.
@@ -104,6 +107,6 @@ and check out the contribution guide lines or put in an issue for areas where yo
 A large thank you to all of those involved and supporting the project. 
 
 
- ## License
+## License
  
- MIT Licensed. Copyright (c) Shane Creedon 2020.
+MIT Licensed. Copyright (c) Shane Creedon 2020.
