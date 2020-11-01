@@ -105,6 +105,8 @@ higher values will appear more rigid.
 - `contextLineWidth` - Specifies the size of the grid lines and on-hover grid lines.
 - `lineColour` - Specifies the colour of the drawn grids. 
 
+**Example:** `<ReactGridDrawUI lineColour={"#ff0000"} contextLineWidth={3}>` etc...
+
 ## Default prop values
 
 - `lineClickTolerance`: 15
