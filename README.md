@@ -91,7 +91,8 @@ It must have a value as per how the tool currently works. You will see an error 
 Follow the example above for clarity. 
 
 Additionally, whatever width you specify this inner div, the canvas will encompass that element's width. Using the example above, the drawing canvas will be 
-equivalent to whe width of the div with ID **container**.
+equivalent to whe width of the div with ID **container**. The example above has the width of the inner div set to 100% with 
+flex display set with two columns - visible in the github repo demo directory.
 
 ## Props
 
