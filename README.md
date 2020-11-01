@@ -1,6 +1,6 @@
 [![NPM](https://nodei.co/npm/react-grid-draw-ui.png)](https://npmjs.org/package/react-grid-draw-ui) <br><br>
 [![npm version](https://badge.fury.io/js/react-grid-draw-ui.svg)](https://badge.fury.io/js/react-grid-draw-ui)
-[![install size](https://packagephobia.com/badge?p=react-grid-draw-ui@1.0.16)](https://packagephobia.com/result?p=react-grid-draw-ui@1.0.16)
+[![install size](https://packagephobia.com/badge?p=react-grid-draw-ui@1.0.17)](https://packagephobia.com/result?p=react-grid-draw-ui@1.0.17)
 
 # React Grid Draw UI
 
