@@ -84,7 +84,7 @@ const App = () => {
 
 **Example Demo:**
 
-![Alt Text](./demo/resources/react-grid-draw-ui-demo.gif)
+![Example Demo Gif](https://raw.githubusercontent.com/ShaneCreedon/React-grid-draw-ui/master/demo/resources/react-grid-draw-ui-demo.gif)
 
 **Note:** Currently it is required for the div wrapped by `<ReactGridDrawUI>` to contain an `id` attribute. This can be any ID. 
 It must have a value as per how the tool currently works. Follow the example above for clarity.
