@@ -1,12 +1,26 @@
 [![NPM](https://nodei.co/npm/react-grid-draw-ui.png)](https://npmjs.org/package/react-grid-draw-ui) <br><br>
 [![npm version](https://badge.fury.io/js/react-grid-draw-ui.svg)](https://badge.fury.io/js/react-grid-draw-ui)
-[![install size](https://packagephobia.com/badge?p=react-grid-draw-ui@1.0.8)](https://packagephobia.com/result?p=react-grid-draw-ui@1.0.8)
+[![install size](https://packagephobia.com/badge?p=react-grid-draw-ui@1.0.15)](https://packagephobia.com/result?p=react-grid-draw-ui@1.0.8)
 
 # React Grid Draw UI
 
 A sophisticated canvas-based drawing and grid-creation React component library.
 
-**Demo:** https://shanecreedon.github.io/React-grid-draw-ui/
+**Demo:** https://shanecreedon.github.io/React-grid-draw-ui/  
+**Demo Code:** https://github.com/ShaneCreedon/React-grid-draw-ui/tree/master/demo
+
+**Why is this useful?**
+
+This package was born out of needing to copy dynamically generated web content into 
+the clipboard for pasting while maintaining the table structure within the clipboard. 
+Very useful for pasting into Excel or other table-centric applications.
+This package will allow any react application to very easily integrate the ability to draw grids on top of the DOM
+structure nested within the wrapper component the package provides.
+
+The package does not provide you with the ability to copy the data directly, but could be added in the future.
+The reason being is that I didn't want this package to become a multi-functional package and rather to just focus
+on a single responsibility. However, the public hook provided will allow you to extract the grid data - specifically, it returns
+an array of 2D arrays (grids), where each index represents the drawing order of the grids.
 
 **Prerequisites**
 - React version >= 16.8 (For hooks)
@@ -67,6 +81,10 @@ const App = () => {
 	)
 };
 ```
+
+**Example Demo:**
+
+![Alt Text](./demo/resources/react-grid-draw-ui-demo.gif)
 
 **Note:** Currently it is required for the div wrapped by `<ReactGridDrawUI>` to contain an `id` attribute. This can be any ID. 
 It must have a value as per how the tool currently works. Follow the example above for clarity.
