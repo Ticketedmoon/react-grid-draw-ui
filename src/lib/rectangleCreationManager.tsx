@@ -24,9 +24,9 @@ export class RectangleCreationManager {
         this.lineColour = gridLineProperties.lineColour;
     }
 
-    drawRectangle(rect: GridRectangle, pageX: number, pageY: number) {
-        rect.width = (pageX - this.canvas.offsetLeft) - rect.startX;
-        rect.height = (pageY - this.canvas.offsetTop) - rect.startY;
+    drawRectangle(rect: GridRectangle, mouseX: number, mouseY: number) {
+        rect.width = (mouseX - this.canvas.offsetLeft) - rect.startX;
+        rect.height = (mouseY - this.canvas.offsetTop) - rect.startY;
         this.ctx.strokeStyle = this.lineColour;
         this.ctx.lineWidth = this.contextLineWidth;
         this.ctx.strokeRect(rect.startX, rect.startY, rect.width, rect.height);
@@ -35,8 +35,8 @@ export class RectangleCreationManager {
     drawLineAtClickedGridBoundaryPosition(e: MouseEvent, rect: GridRectangle) {
         let endBottom = rect.height + rect.startY;
         let endRight = rect.width + rect.startX;
-        let mouseX = e.pageX - this.canvas.offsetLeft;
-        let mouseY = e.pageY - this.canvas.offsetTop;
+        let mouseX = e.offsetX;
+        let mouseY = e.offsetY;
         let isTouchingBoundaryStartX = Math.abs(mouseX - rect.startX) < this.lineClickTolerance;
         let isTouchingBoundaryEndX = Math.abs(mouseX - endRight) < this.lineClickTolerance;
         let isTouchingBoundaryStartY = Math.abs(mouseY - rect.startY) < this.lineClickTolerance;

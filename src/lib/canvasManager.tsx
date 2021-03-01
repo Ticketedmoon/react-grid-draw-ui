@@ -72,8 +72,8 @@ export class CanvasManager {
 		if (this.drag && this.body != null) {
 			this.rectangleCreationManager.drawRectangle(this.currentRect, e.pageX, e.pageY);
 		} else if (!this.drag) {
-			let mouseX = e.pageX - this.canvas.offsetLeft;
-			let mouseY = e.pageY - this.canvas.offsetTop;
+			let mouseX = e.offsetX;
+			let mouseY = e.offsetY;
 			this.rectangleBoundaryValidator.showMouseCursorAsPointer(e, 'auto');
 			this.rectangleBoundaryValidator.CheckForMouseOnBoxBoundaryOfRectAndReDraw(this.currentRect, mouseX, mouseY, e);
 		}
@@ -81,8 +81,8 @@ export class CanvasManager {
 	}
 
 	private drawAllCreatedRectangles = (e: MouseEvent) => {
-		let mouseX = e.pageX - this.canvas.offsetLeft;
-		let mouseY = e.pageY - this.canvas.offsetTop;
+		let mouseX = e.offsetX;
+		let mouseY = e.offsetY;
 		this.buildRectanglesWithMouseChecks(mouseX, mouseY, e);
 	}
 
