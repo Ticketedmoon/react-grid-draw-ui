@@ -70,7 +70,7 @@ export class CanvasManager {
 	mouseMove = (e: MouseEvent) => {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		if (this.drag && this.body != null) {
-			this.rectangleCreationManager.drawRectangle(this.currentRect, e.pageX, e.pageY);
+			this.rectangleCreationManager.drawRectangle(this.currentRect, e.offsetX + this.canvas.offsetLeft, e.offsetY + this.canvas.offsetTop);
 		} else if (!this.drag) {
 			let mouseX = e.offsetX;
 			let mouseY = e.offsetY;
