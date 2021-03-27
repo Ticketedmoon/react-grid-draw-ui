@@ -2,75 +2,92 @@ import {RectangleCreationManager} from "./rectangleCreationManager";
 
 export class PublicFunctionManager {
 
+    private readonly CANVAS_WRAP_ID: string = "canvas-wrap";
+
     private canvas: HTMLCanvasElement;
 
-    private readonly containerID: string | null = null;
     private readonly rectangleCreationManager: RectangleCreationManager;
     private readonly rectangles: GridRectangle[];
     private readonly canvasRect: DOMRect;
 
-    constructor(canvas: HTMLCanvasElement, rectangles: GridRectangle[], containerID: string, rectangleCreationManager: RectangleCreationManager) {
+    constructor(canvas: HTMLCanvasElement, rectangles: GridRectangle[], rectangleCreationManager: RectangleCreationManager) {
         this.canvas = canvas;
         this.rectangles = rectangles;
-        this.containerID = containerID;
         this.rectangleCreationManager = rectangleCreationManager;
         this.canvasRect = this.canvas.getBoundingClientRect();
     }
 
-    // TODO refactor this method
     getItemsWithinRegion = (): string[][][] => {
-        let parentItem = document.getElementById(this.containerID as string);
+        let parentItem  = document.getElementById(this.CANVAS_WRAP_ID);
+        if (parentItem == null) {
+            throw "Could not find DOM element with ID: " + this.CANVAS_WRAP_ID;
+        }
         let listOfTables: string[][][] = [];
         this.rectangles.forEach((rect: GridRectangle) => {
-            rect.horizontalPointsSelected.sort(function (a, b) {
-                return a.startY - b.startY;
-            });
-            rect.verticalPointsSelected.sort(function (a, b) {
-                return a.startX - b.startX;
-            });
-
+            PublicFunctionManager.sortRectangleLines(rect);
+            //PublicFunctionManager.addRectangleEndLines(rect);
             let tableRows: string[][] = this.buildTableFromBox(rect.verticalPointsSelected.length, rect.horizontalPointsSelected.length);
-            rect.horizontalPointsSelected.push({
-                startX: rect.startX,
-                startY: rect.startY + rect.height,
-                endX: rect.startX + rect.width
-            });
-            rect.verticalPointsSelected.push({
-                startX: rect.startX + rect.width,
-                startY: rect.startY,
-                endY: rect.startY + rect.height
-            });
-
-            if (parentItem != null) {
-                let divItems: NodeList = parentItem.childNodes;
-                for (let i = 0; i < divItems.length; i++) {
-                    let spanItems: NodeList = divItems[i].childNodes;
-                    for (let j = 0; j < spanItems.length; j++) {
-                        let item: HTMLElement = spanItems[j] as HTMLElement;
-                        let itemBoundaryInfo: DOMRect = item.getBoundingClientRect()
-                        let itemPositionX = itemBoundaryInfo.left - this.canvasRect.left + window.scrollX;
-                        let itemPositionY = itemBoundaryInfo.top - this.canvasRect.top + window.scrollY;
-                        if (this.isItemInsideBox(rect, item, itemPositionX, itemPositionY)) {
-                            let gridPosition: [number, number] = this.findGridPosition(itemPositionX, itemPositionY,
-                                rect.horizontalPointsSelected, rect.verticalPointsSelected);
-                            let gridRowPos: number = gridPosition[0];
-                            let gridColPos: number = gridPosition[1];
-                            if (tableRows[gridRowPos] != undefined) {
-                                let tableItem: string = tableRows[gridRowPos][gridColPos];
-                                let condition: boolean = tableItem != "" && tableItem != undefined;
-                                tableRows[gridRowPos][gridColPos] = condition ? tableRows[gridRowPos][gridColPos] + " " + item.innerText : item.innerText;
-                            } else {
-                                tableRows[gridRowPos] = [];
-                            }
-                        }
-                    }
-                }
-            }
+            this.buildTableRowsFromDrawnGrid(parentItem as HTMLElement, rect, tableRows);
+/*
             rect.horizontalPointsSelected.pop();
             rect.verticalPointsSelected.pop();
+*/
             listOfTables.push(tableRows);
         });
         return listOfTables;
+    }
+
+    private buildTableRowsFromDrawnGrid(parentItem: Node, rect: GridRectangle, tableRows: string[][]) {
+        let childNodes: NodeList = parentItem.childNodes;
+        if (childNodes.length > 1) {
+            childNodes.forEach((childItem) =>
+                this.buildTableRowsFromDrawnGrid(childItem, rect, tableRows)
+            )
+        } else if (childNodes.length == 1) {
+            let item: HTMLElement = childNodes[0] as HTMLElement;
+            let itemBoundaryInfo: DOMRect = item.getBoundingClientRect()
+            let itemPositionX = itemBoundaryInfo.left - this.canvasRect.left + window.scrollX;
+            let itemPositionY = itemBoundaryInfo.top - this.canvasRect.top + window.scrollY;
+            if (this.isItemInsideBox(rect, item, itemPositionX, itemPositionY)) {
+                this.addGridItemToTable(itemPositionX, itemPositionY, rect, tableRows, item);
+            }
+        }
+    }
+
+    private addGridItemToTable(itemPositionX: number, itemPositionY: number, rect: GridRectangle, tableRows: string[][], item: HTMLElement) {
+        let gridPosition: [number, number] = this.findGridPosition(itemPositionX, itemPositionY,
+            rect.horizontalPointsSelected, rect.verticalPointsSelected);
+        let gridRowPos: number = gridPosition[0];
+        let gridColPos: number = gridPosition[1];
+        if (tableRows[gridRowPos] != undefined) {
+            let tableItem: string = tableRows[gridRowPos][gridColPos];
+            let condition: boolean = tableItem != "" && tableItem != undefined;
+            tableRows[gridRowPos][gridColPos] = condition ? tableRows[gridRowPos][gridColPos] + " " + item.innerText : item.innerText;
+        } else {
+            tableRows[gridRowPos] = [];
+        }
+    }
+
+    private static addRectangleEndLines(rect: GridRectangle) {
+        rect.horizontalPointsSelected.push({
+            startX: rect.startX,
+            startY: rect.startY + rect.height,
+            endX: rect.startX + rect.width
+        });
+        rect.verticalPointsSelected.push({
+            startX: rect.startX + rect.width,
+            startY: rect.startY,
+            endY: rect.startY + rect.height
+        });
+    }
+
+    private static sortRectangleLines(rect: GridRectangle) {
+        rect.horizontalPointsSelected.sort(function (a, b) {
+            return a.startY - b.startY;
+        });
+        rect.verticalPointsSelected.sort(function (a, b) {
+            return a.startX - b.startX;
+        });
     }
 
     undoLastRectangle = () => {

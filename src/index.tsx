@@ -4,7 +4,6 @@ import React, {
 	FunctionComponent,
 	PropsWithChildren,
 	ReactElement,
-	ReactNode,
 	useEffect,
 	useState
 } from "react";
@@ -21,7 +20,14 @@ const canvasStyle: CSSProperties = {
 	position: "absolute"
 }
 
+type CanvasContainerBox = {
+	clientWidth: number,
+	clientHeight: number
+}
+
 const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalProperties> = (props: PropsWithChildren<ReactGridDrawLineOptionalProperties>): ReactElement => {
+
+	const CANVAS_WRAP_ID: string = "canvas-wrap";
 
 	const [canvasManger, setCanvasManager] = useState<CanvasManager>(new CanvasManager({
 		lineClickTolerance: props.lineClickTolerance as number,
@@ -32,26 +38,13 @@ const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalProperties> = 
 	}));
 
 	useEffect(() => {
-		let containerID: string = getContainerID();
-		canvasManger.createCanvas(containerID);
+		let container: CanvasContainerBox = document.getElementById(CANVAS_WRAP_ID) as CanvasContainerBox;
+		canvasManger.createCanvas(container.clientWidth, container.clientHeight);
 	}, []);
-
-	const getContainerID = () => {
-		let children = props.children as React.ReactNodeArray;
-		if (children.length > 1) {
-			throw "children of element <ReactGridDrawUI> greater than 1";
-		}
-		let drawingContainer = children as ReactNode as {props: {id: string}};
-		let containerID = drawingContainer.props.id;
-		if (containerID == null) {
-			throw "child of element <ReactGridDrawUI> has no ID";
-		}
-		return containerID;
-	}
 
 	return (
 		<Fragment>
-			<div id="canvas-wrap" style={canvasWrapStyle}>
+			<div id={CANVAS_WRAP_ID} style={canvasWrapStyle}>
 				{props.children}
 				<canvas id="canvas" style={canvasStyle}/>
 			</div>

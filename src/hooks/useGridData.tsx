@@ -4,6 +4,7 @@ import {PublicFunctionManager} from "../lib/publicFunctionManager";
 let gridOutputManager: PublicFunctionManager | null = null;
 
 export const useGridData = (): Function[] => {
+
 	const [extractGridDataFunction, setExtractGridDataFunction] = useState<() => () => string[][][]>(() => () => []);
 	const [undoLastRectangle, setUndoLastRectangle] = useState<() => () => void>();
 	const [undoLastLineFunction, setUndoLastLineFunction] = useState<() => () => void>();

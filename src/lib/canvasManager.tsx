@@ -12,7 +12,6 @@ export class CanvasManager {
 	private rectangleCreationManager: RectangleCreationManager;
 	private rectangleBoundaryValidator: RectangleBoundaryValidator;
 	private currentRect: GridRectangle;
-	private containerID: string | null = null;
 	private drag: boolean = false;
 	private body: HTMLElement | null = null;
 
@@ -24,26 +23,22 @@ export class CanvasManager {
 		this.lineProperties = lineProperties;
 	}
 
-	createCanvas = (containerID: string) => {
-		this.containerID = containerID;
-		this.body = document.getElementById(this.containerID);
+	createCanvas = (containerWidth: number, containerHeight: number) => {
 		this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
 		this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
 		this.canvas.addEventListener('mousedown', this.mouseDown, false);
 		this.canvas.addEventListener('mouseup', this.mouseUp, false);
 		this.canvas.addEventListener('mousemove', this.mouseMove, false);
-		this.setCanvasSize();
+		this.setCanvasSize(containerWidth, containerHeight);
 
 		this.rectangleCreationManager = new RectangleCreationManager(this.canvas, this.ctx, this.currentRect, this.lineProperties);
 		this.rectangleBoundaryValidator = new RectangleBoundaryValidator(this.canvas, this.lineProperties, this.rectangleCreationManager);
-		setCreationManagersForHook(new PublicFunctionManager(this.canvas, this.rectangles, this.containerID, this.rectangleCreationManager));
+		setCreationManagersForHook(new PublicFunctionManager(this.canvas, this.rectangles, this.rectangleCreationManager));
 	}
 
-	setCanvasSize = () => {
-		if (this.body != null) {
-			this.canvas.width = this.body.offsetWidth;
-			this.canvas.height = this.body.offsetHeight;
-		}
+	setCanvasSize = (containerWidth: number, containerHeight: number) => {
+		this.canvas.width = containerWidth;
+		this.canvas.height = containerHeight;
 	}
 
 	mouseDown = (e: MouseEvent) => {
@@ -69,7 +64,7 @@ export class CanvasManager {
 
 	mouseMove = (e: MouseEvent) => {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		if (this.drag && this.body != null) {
+		if (this.drag) {
 			this.rectangleCreationManager.drawRectangle(this.currentRect, e.offsetX + this.canvas.offsetLeft, e.offsetY + this.canvas.offsetTop);
 		} else if (!this.drag) {
 			let mouseX = e.offsetX;
