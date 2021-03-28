@@ -1,4 +1,5 @@
 import {RectangleCreationManager} from "./rectangleCreationManager";
+import {RectangleManagerUtil} from "./rectangleManagerUtil";
 
 export class PublicFunctionManager {
 
@@ -24,14 +25,12 @@ export class PublicFunctionManager {
         }
         let listOfTables: string[][][] = [];
         this.rectangles.forEach((rect: GridRectangle) => {
-            PublicFunctionManager.sortRectangleLines(rect);
-            //PublicFunctionManager.addRectangleEndLines(rect);
-            let tableRows: string[][] = this.buildTableFromBox(rect.verticalPointsSelected.length, rect.horizontalPointsSelected.length);
+            RectangleManagerUtil.sortRectangleLines(rect);
+            RectangleManagerUtil.addRectangleEndLines(rect);
+            let tableRows: string[][] = this.buildTableShape(rect.horizontalPointsSelected.length, rect.verticalPointsSelected.length);
             this.buildTableRowsFromDrawnGrid(parentItem as HTMLElement, rect, tableRows);
-/*
             rect.horizontalPointsSelected.pop();
             rect.verticalPointsSelected.pop();
-*/
             listOfTables.push(tableRows);
         });
         return listOfTables;
@@ -68,28 +67,6 @@ export class PublicFunctionManager {
         }
     }
 
-    private static addRectangleEndLines(rect: GridRectangle) {
-        rect.horizontalPointsSelected.push({
-            startX: rect.startX,
-            startY: rect.startY + rect.height,
-            endX: rect.startX + rect.width
-        });
-        rect.verticalPointsSelected.push({
-            startX: rect.startX + rect.width,
-            startY: rect.startY,
-            endY: rect.startY + rect.height
-        });
-    }
-
-    private static sortRectangleLines(rect: GridRectangle) {
-        rect.horizontalPointsSelected.sort(function (a, b) {
-            return a.startY - b.startY;
-        });
-        rect.verticalPointsSelected.sort(function (a, b) {
-            return a.startX - b.startX;
-        });
-    }
-
     undoLastRectangle = () => {
         this.rectangles.pop();
         this.rectangleCreationManager.resetBoxProperties({} as GridRectangle, 0, 0);
@@ -117,10 +94,10 @@ export class PublicFunctionManager {
         this.rectangleCreationManager.drawAllRectBorderLinesAndGridLines(this.rectangles);
     }
 
-    private buildTableFromBox = (totalCols: number, totalRows: number) => {
+    private buildTableShape = (totalRows: number, totalCols: number): string[][] => {
         let tableRows: string[][] = [];
-        for (let row = 0; row < totalRows + 1; row++) {
-            for (let col = 0; col < totalCols + 1; col++) {
+        for (let row = 0; row < totalRows; row++) {
+            for (let col = 0; col < totalCols; col++) {
                 if (tableRows[row] != undefined) {
                     tableRows[row].push("");
                 } else if (totalRows !== 0 || totalCols !== 0) {

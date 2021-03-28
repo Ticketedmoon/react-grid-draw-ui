@@ -1,4 +1,4 @@
-import {RectangleBoundaryUtil} from "./rectangleBoundaryUtil";
+import {RectangleManagerUtil} from "./rectangleManagerUtil";
 
 export class RectangleCreationManager {
 
@@ -51,7 +51,7 @@ export class RectangleCreationManager {
 
     private addVerticalLineAtMousePosition(mouseX: number, startTop: number, endBottom: number, rect: GridRectangle) {
         let line: VerticalLineType = {
-            startX: RectangleBoundaryUtil.getShiftRateFromMousePosition(mouseX, this.circleLineShiftSize),
+            startX: RectangleManagerUtil.getShiftRateFromMousePosition(mouseX, this.circleLineShiftSize),
             startY: startTop,
             endY: endBottom
         };
@@ -63,7 +63,7 @@ export class RectangleCreationManager {
     private addHorizontalLineAtMousePosition(startLeft: number, mouseY: number, endRight: number, rect: GridRectangle) {
         let line: HorizontalLineType = {
             startX: startLeft,
-            startY: RectangleBoundaryUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize),
+            startY: RectangleManagerUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize),
             endX: endRight
         };
         rect.horizontalPointsSelected.push(line);

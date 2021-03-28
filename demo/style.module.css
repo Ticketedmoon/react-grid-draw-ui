@@ -4,12 +4,12 @@
     z-index: 10;
     display: block;
     width: 100%;
+    border: 1px solid black;
 }
 
 .drawable-container > div {
     color: black;
-    text-align: justify;
-    padding: 5em;
+    padding: 4.5em;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
@@ -31,14 +31,23 @@
     margin-right: 1em;
 }
 
-.title {
+.title-container {
     font-family: Calibri, serif;
+}
+
+.title {
+    color: red;
+}
+
+.subtitle {
+    color: #16b4ff;
 }
 
 .column {
     display: flex;
     flex-direction: column;
     flex: 1;
+    padding-left: 1em;
 }
 
 table {

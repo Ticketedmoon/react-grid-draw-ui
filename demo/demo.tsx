@@ -10,15 +10,15 @@ const App: React.FunctionComponent = () => {
 	const [getGridData, undoLastRect, undoLastLine]: Function[] = useGridData();
 
 	return (
-		<div className={style["application-container"]}>
+		<div className={style["application-container"]} onClick={() => Helper.buildTable(getGridData())}>
 			<div className={style["column"]}>
-				<div className={style["title"]}>
-					<h2> React Grid Draw UI Demo </h2>
+				<div className={style["title-container"]}>
+					<h2 className={style["title"]}> React Grid Draw UI Demo </h2>
+					<h4 className={style["subtitle"]}> Start drawing on the container! </h4>
 				</div>
 				<div className={style["button-select-container"]}>
-					<button onClick={() => Helper.buildTable(getGridData())}> get grid data</button>
-					<button onClick={() => undoLastLine()}> undo last line</button>
-					<button onClick={() => undoLastRect()}> undo last rect</button>
+					<button onClick={() => undoLastLine()}> Undo Last Line </button>
+					<button onClick={() => undoLastRect()}> Undo Last Rectangle </button>
 				</div>
 				<ReactGridDrawUI>
 					<div className={style["drawable-container"]} id={"container"}>
