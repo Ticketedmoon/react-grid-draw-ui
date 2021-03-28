@@ -6,12 +6,11 @@ export declare class CanvasManager {
     private rectangleCreationManager;
     private rectangleBoundaryValidator;
     private currentRect;
-    private containerID;
     private drag;
     private body;
     constructor(lineProperties: ReactGridDrawLineRequiredProperties);
-    createCanvas: (containerID: string) => void;
-    setCanvasSize: () => void;
+    createCanvas: (containerWidth: number, containerHeight: number) => void;
+    setCanvasSize: (containerWidth: number, containerHeight: number) => void;
     mouseDown: (e: MouseEvent) => void;
     mouseUp: (e: MouseEvent) => void;
     mouseMove: (e: MouseEvent) => void;

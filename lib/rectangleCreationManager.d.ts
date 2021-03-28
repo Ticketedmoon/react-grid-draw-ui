@@ -8,7 +8,7 @@ export declare class RectangleCreationManager {
     private readonly circleLineShiftSize;
     private readonly lineColour;
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, currentRect: GridRectangle, gridLineProperties: ReactGridDrawLineRequiredProperties);
-    drawRectangle(rect: GridRectangle, pageX: number, pageY: number): void;
+    drawRectangle(rect: GridRectangle, mouseX: number, mouseY: number): void;
     drawLineAtClickedGridBoundaryPosition(e: MouseEvent, rect: GridRectangle): void;
     private addVerticalLineAtMousePosition;
     private addHorizontalLineAtMousePosition;
