@@ -5,7 +5,7 @@ module.exports = (mode) => {
         output: {
             filename: 'index.js',
             library: "react-grid-draw-ui",
-            libraryTarget: "commonjs2",
+            libraryTarget: "umd",
             publicPath: "/",
         },
         devServer: {

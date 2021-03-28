@@ -3,7 +3,7 @@ module.exports = (mode) => {
         mode: mode || "development", // Default to development if nothing passed
         entry: "./demo/demo.tsx",
         output: {
-            filename: 'index.js'
+            filename: 'src/index.js'
         },
         devServer: {
             publicPath: 'https://localhost:3000/dist/src',
