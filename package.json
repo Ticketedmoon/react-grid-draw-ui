@@ -12,8 +12,7 @@
     "dev": "./node_modules/.bin/webpack-dev-server --env=development",
     "transpile": "babel src -d dist --copy-files",
     "build-npm-lib": "./node_modules/.bin/webpack --config webpack.config.lib.prod.js -p --env=production && cp ./.npmignore dist && cp ./LICENSE dist && cp ./package.json dist && cp ./README.md dist",
-    "deploy": "gh-pages -d dist/src",
-
+    "deploy": "gh-pages -d dist/src"
   },
   "repository": {
     "type": "git",
