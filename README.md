@@ -21,7 +21,7 @@ The package does not provide you with the ability to copy the data directly, but
 The reason being is that I didn't want this package to become a multi-functional package and rather to just focus
 on a single responsibility. However, the public hook provided will allow you to extract the grid data - specifically, it returns
 an array of 2D arrays (grids), where each index represents the drawing order of the grids. With each 2D array, you can 
-implement you own copy-to-clipboard functionality with relative ease if that is a goal.
+implement your own copy-to-clipboard functionality with relative ease if that is a goal.
 
 **Prerequisites**
 - React version >= 16.8 (For hooks)
