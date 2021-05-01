@@ -1,7 +1,7 @@
 {
   "name": "react-grid-draw-ui",
   "homepage": "https://ShaneCreedon.github.io/React-grid-draw-ui",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "A public React NPM library that enables developers to draw grid(s) on top of their web page UI and use the contents within a 2D array data structure.",
   "main": "./dist/src/index.js",
   "scripts": {
@@ -11,8 +11,9 @@
     "build-prod-demo-gh-page": "./node_modules/.bin/webpack -p --env=production && cp ./index.html dist/src",
     "dev": "./node_modules/.bin/webpack-dev-server --env=development",
     "transpile": "babel src -d dist --copy-files",
-    "build-lib": "./node_modules/.bin/webpack --config webpack.config.lib.prod.js -p --env=production",
-    "deploy": "gh-pages -d dist/src"
+    "build-npm-lib": "./node_modules/.bin/webpack --config webpack.config.lib.prod.js -p --env=production && cp ./.npmignore dist && cp ./LICENSE dist && cp ./package.json dist && cp ./README.md dist",
+    "deploy": "gh-pages -d dist/src",
+
   },
   "repository": {
     "type": "git",
