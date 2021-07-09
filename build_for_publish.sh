@@ -6,4 +6,5 @@ cp ./LICENSE dist
 cp ./package.json dist
 cp ./README.md dist
 rm -rf dist/demo
-mv ./dist/index.js ./dist/src
+mv dist/src/* dist/
+rm -rf dist/src
