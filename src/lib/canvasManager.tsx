@@ -5,7 +5,6 @@ import {PublicFunctionManager} from "./publicFunctionManager";
 
 export class CanvasManager {
 
-	private readonly rectangles: GridRectangle[];
 	private readonly lineProperties: ReactGridDrawLineRequiredProperties;
 	private canvas: any;
 	private ctx: any;
@@ -13,12 +12,10 @@ export class CanvasManager {
 	private rectangleBoundaryValidator: RectangleBoundaryValidator;
 	private currentRect: GridRectangle;
 	private drag: boolean = false;
-	private body: HTMLElement | null = null;
 
 	constructor(lineProperties: ReactGridDrawLineRequiredProperties) {
-		this.rectangles = [];
-		this.currentRect = {startX: 0, startY: 0, width: 0, height: 0, horizontalPointsSelected: [], verticalPointsSelected: [], undoLineList: []};
-		this.rectangleCreationManager = new RectangleCreationManager(this.canvas, this.ctx, this.currentRect, lineProperties);
+		this.currentRect = {startX: 0, startY: 0, width: 0, height: 0, colour: lineProperties.lineColour, horizontalPointsSelected: [], verticalPointsSelected: [], undoLineList: []};
+		this.rectangleCreationManager = new RectangleCreationManager(this.canvas, this.ctx,  lineProperties);
 		this.rectangleBoundaryValidator = new RectangleBoundaryValidator(this.canvas,  lineProperties, this.rectangleCreationManager);
 		this.lineProperties = lineProperties;
 	}
@@ -31,9 +28,10 @@ export class CanvasManager {
 		this.canvas.addEventListener('mousemove', this.mouseMove, false);
 		this.setCanvasSize(containerWidth, containerHeight);
 
-		this.rectangleCreationManager = new RectangleCreationManager(this.canvas, this.ctx, this.currentRect, this.lineProperties);
+		this.rectangleCreationManager = new RectangleCreationManager(this.canvas, this.ctx,  this.lineProperties);
 		this.rectangleBoundaryValidator = new RectangleBoundaryValidator(this.canvas, this.lineProperties, this.rectangleCreationManager);
-		setCreationManagersForHook(new PublicFunctionManager(this.canvas, this.rectangles, this.rectangleCreationManager));
+		setCreationManagersForHook(new PublicFunctionManager(this.canvas, this.rectangleCreationManager.getRectangles(),
+			this.rectangleCreationManager));
 	}
 
 	setCanvasSize = (containerWidth: number, containerHeight: number) => {
@@ -44,10 +42,10 @@ export class CanvasManager {
 	mouseDown = (e: MouseEvent) => {
 		let mouseX = e.offsetX;
 		let mouseY = e.offsetY;
-		let rectangleWithMouseOnBorder: GridRectangle | undefined = this.rectangleBoundaryValidator.getRectForMouseOnBorder(mouseX, mouseY, this.rectangles);
+		let rectangleWithMouseOnBorder: GridRectangle | undefined = this.rectangleBoundaryValidator.getRectForMouseOnBorder(mouseX, mouseY, this.rectangleCreationManager.getRectangles());
 		if (rectangleWithMouseOnBorder != undefined) {
 			this.rectangleCreationManager.drawLineAtClickedGridBoundaryPosition(e, rectangleWithMouseOnBorder);
-		} else if (!this.rectangleBoundaryValidator.isMouseClickInsideBoxRegion(mouseX, mouseY, this.rectangles)) {
+		} else if (!this.rectangleBoundaryValidator.isMouseClickInsideBoxRegion(mouseX, mouseY, this.rectangleCreationManager.getRectangles())) {
 			this.rectangleCreationManager.resetBoxProperties(this.currentRect, mouseX, mouseY);
 			this.drag = true;
 		}
@@ -55,17 +53,17 @@ export class CanvasManager {
 
 	mouseUp = (e: MouseEvent) => {
 		if (this.drag) {
-			this.rectangles.push(this.currentRect);
+			this.rectangleCreationManager.getRectangles().push(this.currentRect);
 		}
 		this.drag = false;
-		this.currentRect = {startX: 0, startY: 0, width: 0, height: 0, verticalPointsSelected: [], horizontalPointsSelected: [], undoLineList: []}
+		this.currentRect = {startX: 0, startY: 0, width: 0, height: 0, colour: this.lineProperties.lineColour, verticalPointsSelected: [], horizontalPointsSelected: [], undoLineList: []}
 		this.drawAllCreatedRectangles(e);
 	}
 
 	mouseMove = (e: MouseEvent) => {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		if (this.drag) {
-			this.rectangleCreationManager.drawRectangle(this.currentRect, e.offsetX + this.canvas.offsetLeft, e.offsetY + this.canvas.offsetTop);
+			this.rectangleCreationManager.drawRectangleFromMouse(this.currentRect, e.offsetX + this.canvas.offsetLeft, e.offsetY + this.canvas.offsetTop);
 		} else if (!this.drag) {
 			let mouseX = e.offsetX;
 			let mouseY = e.offsetY;
@@ -82,7 +80,7 @@ export class CanvasManager {
 	}
 
 	private buildRectanglesWithMouseChecks(mouseX: number, mouseY: number, e: MouseEvent) {
-		this.rectangles.forEach((rect: GridRectangle) => {
+		this.rectangleCreationManager.getRectangles().forEach((rect: GridRectangle) => {
 			this.rectangleBoundaryValidator.CheckForMouseOnBoxBoundaryOfRectAndReDraw(rect, mouseX, mouseY, e);
 			this.rectangleCreationManager.drawRectGridLines(rect);
 		});

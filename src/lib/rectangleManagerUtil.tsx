@@ -8,12 +8,14 @@ export class RectangleManagerUtil {
         rect.horizontalPointsSelected.push({
             startX: rect.startX,
             startY: rect.startY + rect.height,
-            endX: rect.startX + rect.width
+            endX: rect.startX + rect.width,
+            colour: rect.colour as string
         });
         rect.verticalPointsSelected.push({
             startX: rect.startX + rect.width,
             startY: rect.startY,
-            endY: rect.startY + rect.height
+            endY: rect.startY + rect.height,
+            colour: rect.colour as string
         });
     }
 

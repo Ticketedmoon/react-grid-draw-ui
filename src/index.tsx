@@ -57,7 +57,7 @@ ReactGridDrawUI.defaultProps = {
 	selectCircleSize: 3,
 	circleLineShiftSize: 10,
 	contextLineWidth: 1,
-	lineColour: "red"
+	lineColour: "#1290ff"
 }
 
 export {

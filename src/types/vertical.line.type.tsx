@@ -1,5 +1,6 @@
 type VerticalLineType = {
 	startX: number,
 	startY: number,
-	endY: number
+	endY: number,
+	colour: string
 }

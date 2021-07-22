@@ -5,7 +5,7 @@ export class RectangleBoundaryValidator {
 
     private canvas: HTMLCanvasElement;
     private selectCircleSize: number;
-    private contextLineWidth: number
+    private contextLineWidth: number;
     private rectangleCreationManager: RectangleCreationManager;
     private readonly lineClickTolerance: number;
     private readonly circleLineShiftSize: number;
@@ -41,12 +41,12 @@ export class RectangleBoundaryValidator {
         let isTouchingRectBoundary: boolean = this.checkForMouseOnBorderOfSingleRect(rect, mouseX, mouseY);
         if (isTouchingRectBoundary) {
             this.showMouseCursorAsPointer(e, "pointer");
-            this.checkForCircleOnBoundary(rect, mouseX, mouseY);
+            this.showCircleAndLineForMouseHoverOnBoundary(rect, mouseX, mouseY);
         }
-        this.rectangleCreationManager.drawRectangle(rect, boxStartPositionX, boxStartPositionY);
+        this.rectangleCreationManager.drawRectangleFromMouse(rect, boxStartPositionX, boxStartPositionY);
     }
 
-    checkForCircleOnBoundary = (rect: GridRectangle, mouseX: number, mouseY: number) => {
+    showCircleAndLineForMouseHoverOnBoundary = (rect: GridRectangle, mouseX: number, mouseY: number) => {
         let startTop = rect.startY;
         let startLeft = rect.startX;
         let endBottom = rect.height + startTop;
@@ -56,13 +56,13 @@ export class RectangleBoundaryValidator {
         let isTouchingBoundaryStartY = Math.abs(mouseY - startTop) < this.lineClickTolerance;
         let isTouchingBoundaryEndY = Math.abs(mouseY - endBottom) < this.lineClickTolerance;
         if (isTouchingBoundaryStartX && mouseY > rect.startY && mouseY <= rect.startY + rect.height) {
-            this.previewCircleAndLineForLeftBorderOnHover(mouseY, startLeft, endRight);
+            this.previewCircleAndLineForLeftBorderOnHover(mouseY, startLeft, endRight, rect.colour as string);
         } else if (isTouchingBoundaryEndX && mouseY > rect.startY && mouseY <= rect.startY + rect.height) {
-            this.previewCircleAndLineForRightBorderOnHover(mouseY, startLeft, endRight);
+            this.previewCircleAndLineForRightBorderOnHover(mouseY, startLeft, endRight, rect.colour as string);
         } else if (isTouchingBoundaryStartY && mouseX > rect.startX && mouseX <= rect.startX + rect.width) {
-            this.previewCircleAndLineForTopBorderOnHover(mouseX, startTop, endBottom);
+            this.previewCircleAndLineForTopBorderOnHover(mouseX, startTop, endBottom, rect.colour as string);
         } else if (isTouchingBoundaryEndY && mouseX > rect.startX && mouseX <= rect.startX + rect.width) {
-            this.previewCircleAndLineForBottomBorderOnHover(mouseX, endBottom, startTop);
+            this.previewCircleAndLineForBottomBorderOnHover(mouseX, endBottom, startTop, rect.colour as string);
         }
     }
 
@@ -71,31 +71,32 @@ export class RectangleBoundaryValidator {
         target.style.cursor = pointerType;
     }
 
-    private previewCircleAndLineForBottomBorderOnHover(mouseX: number, endBottom: number, startTop: number) {
+    private previewCircleAndLineForBottomBorderOnHover(mouseX: number, endBottom: number, startTop: number, lineColour: string) {
         let shiftRateFromMousePosition = RectangleManagerUtil.getShiftRateFromMousePosition(mouseX, this.circleLineShiftSize);
-        let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: endBottom, endY: startTop};
-        this.rectangleCreationManager.drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, endBottom);
+        let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: endBottom, endY: startTop, colour: lineColour};
+
+        this.rectangleCreationManager.drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, endBottom, lineColour);
         this.rectangleCreationManager.drawLineFromBoxBoundaryY(line);
     }
 
-    private previewCircleAndLineForTopBorderOnHover(mouseX: number, startTop: number, endBottom: number) {
+    private previewCircleAndLineForTopBorderOnHover(mouseX: number, startTop: number, endBottom: number, lineColour: string) {
         let shiftRateFromMousePosition = RectangleManagerUtil.getShiftRateFromMousePosition(mouseX, this.circleLineShiftSize);
-        let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: startTop, endY: endBottom};
-        this.rectangleCreationManager.drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, startTop);
+        let line: VerticalLineType = {startX: shiftRateFromMousePosition, startY: startTop, endY: endBottom, colour: lineColour};
+        this.rectangleCreationManager.drawSelectableCircleOnBoxBoundary(shiftRateFromMousePosition, startTop, lineColour);
         this.rectangleCreationManager.drawLineFromBoxBoundaryY(line);
     }
 
-    private previewCircleAndLineForRightBorderOnHover(mouseY: number, startLeft: number, endRight: number) {
+    private previewCircleAndLineForRightBorderOnHover(mouseY: number, startLeft: number, endRight: number, lineColour: string) {
         let shiftRateFromMousePosition = RectangleManagerUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize);
-        let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight};
-        this.rectangleCreationManager.drawSelectableCircleOnBoxBoundary(endRight, shiftRateFromMousePosition);
+        let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight, colour: lineColour};
+        this.rectangleCreationManager.drawSelectableCircleOnBoxBoundary(endRight, shiftRateFromMousePosition, lineColour);
         this.rectangleCreationManager.drawLineFromBoxBoundaryX(line);
     }
 
-    private previewCircleAndLineForLeftBorderOnHover(mouseY: number, startLeft: number, endRight: number) {
+    private previewCircleAndLineForLeftBorderOnHover(mouseY: number, startLeft: number, endRight: number, lineColour: string) {
         let shiftRateFromMousePosition = RectangleManagerUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize);
-        let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight};
-        this.rectangleCreationManager.drawSelectableCircleOnBoxBoundary(startLeft, shiftRateFromMousePosition);
+        let line: HorizontalLineType = {startX: startLeft, startY: shiftRateFromMousePosition, endX: endRight, colour: lineColour};
+        this.rectangleCreationManager.drawSelectableCircleOnBoxBoundary(startLeft, shiftRateFromMousePosition, lineColour);
         this.rectangleCreationManager.drawLineFromBoxBoundaryX(line);
     }
 

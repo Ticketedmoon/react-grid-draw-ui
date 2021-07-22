@@ -2,7 +2,7 @@ import {RectangleManagerUtil} from "./rectangleManagerUtil";
 
 export class RectangleCreationManager {
 
-    private readonly currentRect: GridRectangle;
+    private readonly rectangles: GridRectangle[];
     private ctx: CanvasRenderingContext2D;
     private canvas: HTMLCanvasElement;
 
@@ -10,24 +10,25 @@ export class RectangleCreationManager {
     private readonly selectCircleSize: number;
     private readonly contextLineWidth: number
     private readonly circleLineShiftSize: number;
-    private readonly lineColour: string;
 
-    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, currentRect: GridRectangle,
-                gridLineProperties: ReactGridDrawLineRequiredProperties) {
+    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, gridLineProperties: ReactGridDrawLineRequiredProperties) {
         this.canvas = canvas;
         this.ctx = ctx;
-        this.currentRect = currentRect;
         this.lineClickTolerance = gridLineProperties.lineClickTolerance;
         this.selectCircleSize = gridLineProperties.selectCircleSize;
         this.contextLineWidth = gridLineProperties.contextLineWidth;
         this.circleLineShiftSize = gridLineProperties.circleLineShiftSize;
-        this.lineColour = gridLineProperties.lineColour;
+        this.rectangles = [];
     }
 
-    drawRectangle(rect: GridRectangle, mouseX: number, mouseY: number) {
+    drawRectangleFromMouse(rect: GridRectangle, mouseX: number, mouseY: number) {
         rect.width = (mouseX - this.canvas.offsetLeft) - rect.startX;
         rect.height = (mouseY - this.canvas.offsetTop) - rect.startY;
-        this.ctx.strokeStyle = this.lineColour;
+        this.drawRectangleWithColour(rect);
+    }
+
+    drawRectangleWithColour(rect: GridRectangle) {
+        this.ctx.strokeStyle = rect.colour as string;
         this.ctx.lineWidth = this.contextLineWidth;
         this.ctx.strokeRect(rect.startX, rect.startY, rect.width, rect.height);
     }
@@ -49,33 +50,19 @@ export class RectangleCreationManager {
         }
     }
 
-    private addVerticalLineAtMousePosition(mouseX: number, startTop: number, endBottom: number, rect: GridRectangle) {
-        let line: VerticalLineType = {
-            startX: RectangleManagerUtil.getShiftRateFromMousePosition(mouseX, this.circleLineShiftSize),
-            startY: startTop,
-            endY: endBottom
-        };
-        rect.verticalPointsSelected.push(line);
-        this.drawLineFromBoxBoundaryY(line);
-        rect.undoLineList.push(false);
+    getRectangles() {
+        return this.rectangles;
     }
 
-    private addHorizontalLineAtMousePosition(startLeft: number, mouseY: number, endRight: number, rect: GridRectangle) {
-        let line: HorizontalLineType = {
-            startX: startLeft,
-            startY: RectangleManagerUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize),
-            endX: endRight
-        };
-        rect.horizontalPointsSelected.push(line);
-        rect.undoLineList.push(true);
-        this.drawLineFromBoxBoundaryX(line);
+    addRectangle(rect: GridRectangle) {
+        this.rectangles.push(rect);
     }
 
     drawAllRectBorderLinesAndGridLines = (rectangles: GridRectangle[]) => {
         rectangles.forEach((rect: GridRectangle) => {
             let boxStartPositionX = rect.startX + rect.width + this.canvas.offsetLeft;
             let boxStartPositionY = rect.startY + rect.height + this.canvas.offsetTop;
-            this.drawRectangle(rect, boxStartPositionX, boxStartPositionY);
+            this.drawRectangleFromMouse(rect, boxStartPositionX, boxStartPositionY);
             this.drawRectGridLines(rect);
         });
     };
@@ -89,8 +76,8 @@ export class RectangleCreationManager {
         });
     }
 
-    drawSelectableCircleOnBoxBoundary = (mouseX: number, mouseY: number) => {
-        this.ctx.fillStyle = this.lineColour;
+    drawSelectableCircleOnBoxBoundary = (mouseX: number, mouseY: number, colour: string) => {
+        this.ctx.fillStyle = colour;
         this.ctx.beginPath();
         this.ctx.arc(mouseX, mouseY, this.selectCircleSize, 0, Math.PI * 2);
         this.ctx.closePath();
@@ -98,7 +85,7 @@ export class RectangleCreationManager {
     }
 
     drawLineFromBoxBoundaryX = (line: HorizontalLineType) => {
-        this.ctx.fillStyle = this.lineColour;
+        this.ctx.strokeStyle = line.colour;
         this.ctx.beginPath();
         this.ctx.lineWidth = this.contextLineWidth;
         this.ctx.moveTo(line.startX, line.startY);
@@ -108,7 +95,7 @@ export class RectangleCreationManager {
     }
 
     drawLineFromBoxBoundaryY = (line: VerticalLineType) => {
-        this.ctx.fillStyle = this.lineColour;
+        this.ctx.strokeStyle = line.colour;
         this.ctx.lineWidth = this.contextLineWidth;
         this.ctx.beginPath();
         this.ctx.moveTo(line.startX, line.startY);
@@ -121,5 +108,29 @@ export class RectangleCreationManager {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         rect.startX = startX;
         rect.startY = startY;
+    }
+
+    private addVerticalLineAtMousePosition(mouseX: number, startTop: number, endBottom: number, rect: GridRectangle) {
+        let line: VerticalLineType = {
+            startX: RectangleManagerUtil.getShiftRateFromMousePosition(mouseX, this.circleLineShiftSize),
+            startY: startTop,
+            endY: endBottom,
+            colour: rect.colour as string
+        };
+        rect.verticalPointsSelected.push(line);
+        this.drawLineFromBoxBoundaryY(line);
+        rect.undoLineList.push(false);
+    }
+
+    private addHorizontalLineAtMousePosition(startLeft: number, mouseY: number, endRight: number, rect: GridRectangle) {
+        let line: HorizontalLineType = {
+            startX: startLeft,
+            startY: RectangleManagerUtil.getShiftRateFromMousePosition(mouseY, this.circleLineShiftSize),
+            endX: endRight,
+            colour: rect.colour as string
+        };
+        rect.horizontalPointsSelected.push(line);
+        rect.undoLineList.push(true);
+        this.drawLineFromBoxBoundaryX(line);
     }
 }

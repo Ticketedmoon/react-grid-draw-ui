@@ -53,7 +53,7 @@ import {ReactGridDrawUI, useGridData} from "react-grid-draw-ui";
 
 const App = () => {
 
-	const [getGridData, removeLastGrid, removeLastDrawnGridLine] = useGridData();
+	const [getGridData, removeLastGrid, removeLastDrawnGridLine, drawRectanglesFromPayloadFunction] = useGridData();
 
 	return (
 		<div>
@@ -75,7 +75,7 @@ const App = () => {
 					</div>
 				</div>
 			</ReactGridDrawUI>
-			<button onClick={() => console.log(getGridData())}> Get Grid Data </button>
+			<button onClick={() => console.log(getGridData())}> Get Grid Data (Check web console) </button>
 			<button onClick={() => removeLastGrid()}> Remove last drawn grid </button>
 			<button onClick={() => removeLastDrawnGridLine()}> Remove last drawn grid line </button>
 		</div>
@@ -114,7 +114,7 @@ higher values will appear more rigid.
 - `selectCircleSize`: 3
 - `circleLineShiftSize`: 10
 - `contextLineWidth`: 1
-- `lineColour`: "red" (**Note:** You can specify string literals or hex values here)
+- `lineColour`: **#1290FF** - (**Note:** You can specify string literals or hex values here)
 
 ## Public Facing library functions 
 
@@ -122,6 +122,43 @@ higher values will appear more rigid.
 
 - `<ReactGridDrawUI>` - The Wrapper component showed in the example above. 
 - `useGridData()` - A custom hook for getting grid data or using the function suite we provide - see example above.
+    - `getGridData` - Extracts the textual data within your drawn grid and returns the results in a 2D array, 
+    - `removeLastGrid` - Removes the last drawn grid,
+    - `removeLastDrawnGridLine` - Removes the last drawn line in the last grid, 
+    - `drawRectanglesFromPayload` - This function accepts a list of `GridRectangle[]` which enables you to pre-render grids on the UI, 
+      without the user needing to manually draw.
+      
+**Grid Rectangle:**
+````
+type GridRectangle = {
+    startX: number,
+    startY: number
+    width: number,
+    height: number,
+    colour?: string,
+    horizontalPointsSelected: HorizontalLineType[],
+    verticalPointsSelected: VerticalLineType[],
+    undoLineList: boolean[]
+}
+````
+
+**Horizontal Line Type:**
+````
+type HorizontalLineType = {
+	startX: number,
+	endX: number
+	startY: number,
+}
+````
+
+**Vertical Line Type:**
+````
+type VerticalLineType = {
+	startX: number,
+	startY: number,
+	endY: number
+}
+````
 
 ## Support
 
