@@ -5,10 +5,14 @@ import React, {
 	PropsWithChildren,
 	ReactElement,
 	useEffect,
-	useState
+	useRef
 } from "react";
 import {useGridData} from "./hooks/useGridData";
 import {CanvasManager} from "./lib/canvasManager";
+import {GridRectangle} from "./types/grid.rectangle.type";
+import {HorizontalLineType} from "./types/horizontal.line.type";
+import {VerticalLineType} from "./types/vertical.line.type";
+import {ReactGridDrawLineOptionalProperties} from "./types/react.grid.line.properties.type";
 
 const canvasWrapStyle: CSSProperties = {
 	display: "flex",
@@ -29,7 +33,7 @@ const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalProperties> = 
 
 	const CANVAS_WRAP_ID: string = "canvas-wrap";
 
-	const [canvasManger, setCanvasManager] = useState<CanvasManager>(new CanvasManager({
+	const canvasManger = useRef<CanvasManager>(new CanvasManager({
 		lineClickTolerance: props.lineClickTolerance as number,
 		selectCircleSize: props.selectCircleSize as number,
 		circleLineShiftSize: props.circleLineShiftSize as number,
@@ -39,7 +43,7 @@ const ReactGridDrawUI: FunctionComponent<ReactGridDrawLineOptionalProperties> = 
 
 	useEffect(() => {
 		let container: CanvasContainerBox = document.getElementById(CANVAS_WRAP_ID) as CanvasContainerBox;
-		canvasManger.createCanvas(container.clientWidth, container.clientHeight);
+		canvasManger.current.createCanvas(container.clientWidth, container.clientHeight);
 	}, []);
 
 	return (
@@ -62,5 +66,9 @@ ReactGridDrawUI.defaultProps = {
 
 export {
 	ReactGridDrawUI,
-	useGridData
+	useGridData,
+	ReactGridDrawLineOptionalProperties,
+	GridRectangle,
+	HorizontalLineType,
+	VerticalLineType
 }

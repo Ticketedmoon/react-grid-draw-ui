@@ -2,6 +2,8 @@ import {RectangleCreationManager} from "./rectangleCreationManager";
 import {RectangleBoundaryValidator} from "./rectangleBoundaryValidator";
 import {setCreationManagersForHook} from "../hooks/useGridData";
 import {PublicFunctionManager} from "./publicFunctionManager";
+import {ReactGridDrawLineRequiredProperties} from "../types/react.grid.line.properties.type";
+import {GridRectangle} from "../types/grid.rectangle.type";
 
 export class CanvasManager {
 

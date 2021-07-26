@@ -1,4 +1,4 @@
-type HorizontalLineType = {
+export type HorizontalLineType = {
 	startX: number,
 	endX: number
 	startY: number,

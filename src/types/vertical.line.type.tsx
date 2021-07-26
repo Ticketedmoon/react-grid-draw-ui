@@ -1,4 +1,4 @@
-type VerticalLineType = {
+export type VerticalLineType = {
 	startX: number,
 	startY: number,
 	endY: number,

@@ -1,3 +1,5 @@
+import {GridRectangle} from "../types/grid.rectangle.type";
+
 export class RectangleManagerUtil {
 
     static getShiftRateFromMousePosition = (mousePos: number, circleLineShiftSize: number) => {

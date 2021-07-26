@@ -1,5 +1,9 @@
 import {RectangleCreationManager} from "./rectangleCreationManager";
 import {RectangleManagerUtil} from "./rectangleManagerUtil";
+import {ReactGridDrawLineRequiredProperties} from "../types/react.grid.line.properties.type";
+import {GridRectangle} from "../types/grid.rectangle.type";
+import {VerticalLineType} from "../types/vertical.line.type";
+import {HorizontalLineType} from "../types/horizontal.line.type";
 
 export class RectangleBoundaryValidator {
 
