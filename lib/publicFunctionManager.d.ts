@@ -1,4 +1,5 @@
 import { RectangleCreationManager } from "./rectangleCreationManager";
+import { GridRectangle } from "../types/grid.rectangle.type";
 export declare class PublicFunctionManager {
     private readonly CANVAS_WRAP_ID;
     private canvas;
@@ -7,11 +8,9 @@ export declare class PublicFunctionManager {
     private readonly canvasRect;
     constructor(canvas: HTMLCanvasElement, rectangles: GridRectangle[], rectangleCreationManager: RectangleCreationManager);
     getItemsWithinRegion: () => string[][][];
+    drawRectanglesFromPayload: (rects: GridRectangle[]) => void;
     private buildTableRowsFromDrawnGrid;
     private addGridItemToTable;
-    undoLastRectangle: () => void;
-    undoLastDrawnLineForLatestRectangle: () => void;
-    private undoLastDrawnLineForRectangle;
     private buildTableShape;
     private findGridPosition;
     private isItemInsideBox;

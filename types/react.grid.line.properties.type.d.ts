@@ -12,3 +12,4 @@ declare type ReactGridDrawLineRequiredProperties = {
     contextLineWidth: number;
     lineColour: string;
 };
+export { ReactGridDrawLineOptionalProperties, ReactGridDrawLineRequiredProperties };

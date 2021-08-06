@@ -1,21 +1,30 @@
+import { ReactGridDrawLineRequiredProperties } from "../types/react.grid.line.properties.type";
+import { GridRectangle } from "../types/grid.rectangle.type";
+import { HorizontalLineType } from "../types/horizontal.line.type";
+import { VerticalLineType } from "../types/vertical.line.type";
 export declare class RectangleCreationManager {
-    private readonly currentRect;
+    private readonly X_CHARACTER;
+    private readonly rectangles;
     private ctx;
     private canvas;
     private readonly lineClickTolerance;
     private readonly selectCircleSize;
     private readonly contextLineWidth;
     private readonly circleLineShiftSize;
-    private readonly lineColour;
-    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, currentRect: GridRectangle, gridLineProperties: ReactGridDrawLineRequiredProperties);
-    drawRectangle(rect: GridRectangle, mouseX: number, mouseY: number): void;
+    constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, gridLineProperties: ReactGridDrawLineRequiredProperties);
+    drawRectangleFromMouse(rect: GridRectangle, mouseX: number, mouseY: number): void;
+    drawRectangleWithColour(rect: GridRectangle): void;
+    clearRegionFromCanvasContext(x: number, y: number, width: number, height: number): void;
+    drawRemoveTableButton(rect: GridRectangle): void;
     drawLineAtClickedGridBoundaryPosition(e: MouseEvent, rect: GridRectangle): void;
-    private addVerticalLineAtMousePosition;
-    private addHorizontalLineAtMousePosition;
-    drawAllRectBorderLinesAndGridLines: (rectangles: GridRectangle[]) => void;
+    getRectangles(): GridRectangle[];
+    addRectangle(rect: GridRectangle): void;
+    removeRectangle(index: number): void;
     drawRectGridLines(rect: GridRectangle): void;
-    drawSelectableCircleOnBoxBoundary: (mouseX: number, mouseY: number) => void;
+    drawSelectableCircleOnBoxBoundary: (mouseX: number, mouseY: number, colour: string) => void;
     drawLineFromBoxBoundaryX: (line: HorizontalLineType) => void;
     drawLineFromBoxBoundaryY: (line: VerticalLineType) => void;
     resetBoxProperties: (rect: GridRectangle, startX: number, startY: number) => void;
+    private addVerticalLineAtMousePosition;
+    private addHorizontalLineAtMousePosition;
 }

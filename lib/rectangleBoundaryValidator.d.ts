@@ -1,20 +1,33 @@
 import { RectangleCreationManager } from "./rectangleCreationManager";
+import { ReactGridDrawLineRequiredProperties } from "../types/react.grid.line.properties.type";
+import { GridRectangle } from "../types/grid.rectangle.type";
 export declare class RectangleBoundaryValidator {
+    private readonly NO_INDEX_FOUND;
     private canvas;
     private selectCircleSize;
     private contextLineWidth;
     private rectangleCreationManager;
     private readonly lineClickTolerance;
     private readonly circleLineShiftSize;
+    private lineDeletionModeActive;
     constructor(canvas: HTMLCanvasElement, gridLineProperties: ReactGridDrawLineRequiredProperties, rectangleCreationManager: RectangleCreationManager);
-    getRectForMouseOnBorder(mouseX: number, mouseY: number, rectangles: GridRectangle[]): GridRectangle | undefined;
-    isMouseClickInsideBoxRegion: (mouseX: number, mouseY: number, rectangles: GridRectangle[]) => boolean;
-    CheckForMouseOnBoxBoundaryOfRectAndReDraw(rect: GridRectangle, mouseX: number, mouseY: number, e: MouseEvent): void;
-    checkForCircleOnBoundary: (rect: GridRectangle, mouseX: number, mouseY: number) => void;
+    deleteGridWhenRemoveButtonClicked(mouseX: number, mouseY: number): boolean;
+    isMouseOnRemoveButtonForAnyGrid(mouseX: number, mouseY: number): boolean;
+    getRectForMouseOnBorder(mouseX: number, mouseY: number): GridRectangle | undefined;
+    getGridWhenMouseClickInsideGridRegion: (mouseX: number, mouseY: number) => GridRectangle | undefined;
+    checkForMouseHoverOnGrid(rect: GridRectangle, mouseX: number, mouseY: number, e: MouseEvent): void;
+    private repaintLinesGridColouration;
+    private handleDeletionModeHoverAction;
+    findHorizontalLineIndexInGridFromMousePosition: (rect: GridRectangle, mouseX: number, mouseY: number) => number;
+    findVerticalLineIndexInGridFromMousePosition: (rect: GridRectangle, mouseX: number, mouseY: number) => number;
+    isMouseOnRemoveGridButton: (rect: GridRectangle, mouseX: number, mouseY: number) => boolean | undefined;
+    showCircleAndLineForMouseHoverOnBoundary: (rect: GridRectangle, mouseX: number, mouseY: number) => void;
     showMouseCursorAsPointer(e: MouseEvent, pointerType: string): void;
+    setLineDeletionMode(mode: boolean): void;
+    isLineDeletionModeActive(): boolean;
     private previewCircleAndLineForBottomBorderOnHover;
     private previewCircleAndLineForTopBorderOnHover;
     private previewCircleAndLineForRightBorderOnHover;
     private previewCircleAndLineForLeftBorderOnHover;
-    private checkForMouseOnBorderOfSingleRect;
+    private checkForMouseOnBorderOfGrid;
 }
