@@ -24,7 +24,7 @@ an array of 2D arrays (grids), where each index represents the drawing order of 
 implement your own copy-to-clipboard functionality with relative ease if that is a goal.
 
 **Prerequisites**
-- React version >= 16.8 (For hooks)
+- React version >= 16.8 (Hook support)
 
 **Features Include:**  
 - Drawing a box on a given react page using simple mouse drag and clicks.
@@ -53,7 +53,7 @@ import {ReactGridDrawUI, useGridData} from "react-grid-draw-ui";
 
 const App = () => {
 
-	const [getGridData, removeLastGrid, removeLastDrawnGridLine, drawRectanglesFromPayloadFunction] = useGridData();
+	const [getGridData, clearDownGrids, drawRectanglesFromPayloadFunction] = useGridData();
 
 	return (
 		<div>
@@ -61,7 +61,7 @@ const App = () => {
 				<h2> React Grid Draw UI NPM Library Demo </h2>
 			</div>
 			<ReactGridDrawUI>
-				<div id={"container"}>
+				<div>
 					<div>
 						<div className={"test-container"}>
 							<p> test-A </p>
@@ -75,9 +75,8 @@ const App = () => {
 					</div>
 				</div>
 			</ReactGridDrawUI>
-			<button onClick={() => console.log(getGridData())}> Get Grid Data (Check web console) </button>
-			<button onClick={() => removeLastGrid()}> Remove last drawn grid </button>
-			<button onClick={() => removeLastDrawnGridLine()}> Remove last drawn grid line </button>
+			<button onClick={() => console.log(getGridData())}> Gets Grid Data in a 2D array (Check the web console for results) </button>
+			<button onClick={() => clearDownGrids()}> Remove all drawn grids </button>
 		</div>
 	)
 };
@@ -87,13 +86,10 @@ const App = () => {
 
 ![Example Demo Gif](https://raw.githubusercontent.com/ShaneCreedon/React-grid-draw-ui/master/demo/resources/react-grid-draw-ui-demo.gif)
 
-**Note A:** Currently it is required for the div wrapped by `<ReactGridDrawUI>` to contain an `id` attribute. This can be any ID. 
-It must have a value as per how the tool currently works. You will see an error indicative of this in the console if you did not set the ID attribute.
-Follow the example above for clarity. 
-
-Additionally, whatever width you specify this inner div, the canvas will encompass that element's width. Using the example above, the drawing canvas will be 
-equivalent to the width of the div with ID **container**. The example above has the width of the inner div set to 100% with 
-flex display set with two columns - visible in the github repo demo directory.
+**Note:**   
+Whatever width you specify this inner div, the canvas will encompass that element's width. Using the example above, the drawing canvas will be 
+equivalent to the width of the inner div. The example above has the width of the inner div set to 100% with 
+flex display set with two columns - visible in the Github repo demo directory.
 
 ## Props
 
@@ -123,22 +119,23 @@ higher values will appear more rigid.
 - `<ReactGridDrawUI>` - The Wrapper component showed in the example above. 
 - `useGridData()` - A custom hook for getting grid data or using the function suite we provide - see example above.
     - `getGridData` - Extracts the textual data within your drawn grid and returns the results in a 2D array, 
-    - `removeLastGrid` - Removes the last drawn grid,
-    - `removeLastDrawnGridLine` - Removes the last drawn line in the last grid, 
+    - `clearDownGrids` - Removes all grids that were drawn,
     - `drawRectanglesFromPayload` - This function accepts a list of `GridRectangle[]` which enables you to pre-render grids on the UI, 
       without the user needing to manually draw.
       
 **Grid Rectangle:**
 ````
 type GridRectangle = {
-    startX: number,
-    startY: number
-    width: number,
-    height: number,
-    colour?: string,
-    horizontalPointsSelected: HorizontalLineType[],
-    verticalPointsSelected: VerticalLineType[],
-    undoLineList: boolean[]
+	startX: number,
+	startY: number
+	endX: number
+	endY: number,
+	width: number,
+	height: number,
+	colour?: string,
+	horizontalPointsSelected: HorizontalLineType[],
+	verticalPointsSelected: VerticalLineType[],
+	undoLineList: boolean[]
 }
 ````
 
@@ -148,6 +145,7 @@ type HorizontalLineType = {
 	startX: number,
 	endX: number
 	startY: number,
+	colour: string
 }
 ````
 
@@ -156,7 +154,8 @@ type HorizontalLineType = {
 type VerticalLineType = {
 	startX: number,
 	startY: number,
-	endY: number
+	endY: number,
+	colour: string
 }
 ````
 

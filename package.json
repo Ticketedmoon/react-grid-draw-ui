@@ -1,7 +1,7 @@
 {
   "name": "react-grid-draw-ui",
   "homepage": "https://ShaneCreedon.github.io/React-grid-draw-ui",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A public React NPM library that enables developers to draw grid(s) on top of their web page UI and use the contents within a 2D array data structure.",
   "main": "./dist/src/index.js",
   "scripts": {

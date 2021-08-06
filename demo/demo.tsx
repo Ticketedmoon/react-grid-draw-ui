@@ -28,7 +28,7 @@ const App: React.FunctionComponent = () => {
 					<button onClick={() => clearDownGrids()}> Remove all grids </button>
 				</div>
 				<ReactGridDrawUI>
-					<div className={style["drawable-container"]} id={"container"}>
+					<div className={style["drawable-container"]}>
 						<div>
 							<div className={style["test-container"]}>
 								<p> test-A </p>
