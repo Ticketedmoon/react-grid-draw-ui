@@ -57,6 +57,7 @@ export class PublicFunctionManager {
             this.rectangleCreationManager.drawRectangleWithColour(rect);
             this.rectangleCreationManager.addRectangle(rect);
             this.rectangleCreationManager.drawRectGridLines(rect);
+            this.rectangleCreationManager.drawRemoveTableButton(rect);
         });
     }
 
@@ -122,7 +123,7 @@ export class PublicFunctionManager {
     };
 
     private findGridPosition = (itemX: number, itemY: number, horizontalLines: HorizontalLineType[],
-                        verticalLines: VerticalLineType[]): [number, number] => {
+                                verticalLines: VerticalLineType[]): [number, number] => {
         let col: number = 0;
         let row: number = 0;
         if (horizontalLines.length === 0) {

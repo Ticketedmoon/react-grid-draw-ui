@@ -6,6 +6,8 @@ import {VerticalLineType} from "../types/vertical.line.type";
 
 export class RectangleCreationManager {
 
+    private readonly X_CHARACTER: string = "❎";
+
     private readonly rectangles: GridRectangle[];
     private ctx: CanvasRenderingContext2D;
     private canvas: HTMLCanvasElement;
@@ -37,6 +39,23 @@ export class RectangleCreationManager {
         this.ctx.strokeRect(rect.startX, rect.startY, rect.width, rect.height);
     }
 
+    clearRegionFromCanvasContext(x: number, y: number, width: number, height: number) {
+        this.ctx.clearRect(x, y, width, height);
+    }
+
+    drawRemoveTableButton(rect: GridRectangle) {
+        this.ctx.font = '1em Roboto';
+        if (rect.startX <= rect.endX && rect.startY <= rect.endY) {
+            this.ctx.fillText(this.X_CHARACTER, (rect.startX + rect.width) - 20, rect.startY - 10);
+        } else if (rect.startX <= rect.endX && rect.startY > rect.endY) {
+            this.ctx.fillText(this.X_CHARACTER, (rect.startX + rect.width) - 20, rect.endY - 10);
+        } else if (rect.startX > rect.endX && rect.startY <= rect.endY) {
+            this.ctx.fillText(this.X_CHARACTER, (rect.startX) - 20, rect.startY - 10);
+        } else if (rect.startX > rect.endX && rect.startY > rect.endY) {
+            this.ctx.fillText(this.X_CHARACTER, (rect.startX) - 20, rect.endY - 10);
+        }
+    }
+
     drawLineAtClickedGridBoundaryPosition(e: MouseEvent, rect: GridRectangle) {
         let endBottom = rect.height + rect.startY;
         let endRight = rect.width + rect.startX;
@@ -60,6 +79,10 @@ export class RectangleCreationManager {
 
     addRectangle(rect: GridRectangle) {
         this.rectangles.push(rect);
+    }
+
+    removeRectangle(index: number) {
+        this.rectangles.splice(index, 1);
     }
 
     drawAllRectBorderLinesAndGridLines = (rectangles: GridRectangle[]) => {

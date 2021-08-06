@@ -4,6 +4,8 @@ import {VerticalLineType} from "./vertical.line.type";
 export type GridRectangle = {
 	startX: number,
 	startY: number
+	endX: number
+	endY: number,
 	width: number,
 	height: number,
 	colour?: string,
