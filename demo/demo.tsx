@@ -15,6 +15,14 @@ const App: React.FunctionComponent = () => {
 				<div className={style["title-container"]}>
 					<h2 className={style["title"]}> React Grid Draw UI Demo </h2>
 					<h4 className={style["subtitle"]}> Start drawing on the container! </h4>
+					<b> Guide: </b>
+					<ul>
+						<li> Draw a grid with mouse down over a location in the window below. </li>
+						<li> Add some horizontal and vertical grid lines by clicking the border of the grid. </li>
+						<li> You can remove this grid by clicking the green "X" in the top-right hand corner. </li>
+						<li> You can move lines within the grid by clicking on them and dragging. </li>
+						<li> You can delete lines by holding down "CTRL" and clicking on a line inside the grid. </li>
+					</ul>
 				</div>
 				<div className={style["button-select-container"]}>
 					<button onClick={() => undoLastLine()}> Undo Last Line </button>

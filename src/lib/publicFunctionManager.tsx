@@ -39,19 +39,6 @@ export class PublicFunctionManager {
         return listOfTables;
     }
 
-    undoLastRectangle = () => {
-        this.rectangles.pop();
-        this.rectangleCreationManager.resetBoxProperties({} as GridRectangle, 0, 0);
-        this.rectangleCreationManager.drawAllRectBorderLinesAndGridLines(this.rectangles);
-    };
-
-    undoLastDrawnLineForLatestRectangle = () => {
-        // TODO: change hard-coded index to be a int parameter that user can choose - so if they choose the 2th-index rectangle
-        //  We will remove lines from that rectangle.
-        let rect: GridRectangle = this.rectangles[this.rectangles.length-1];
-        this.undoLastDrawnLineForRectangle(rect);
-    }
-
     drawRectanglesFromPayload = (rects: GridRectangle[]) => {
         rects.forEach(rect => {
             this.rectangleCreationManager.drawRectangleWithColour(rect);
@@ -90,20 +77,6 @@ export class PublicFunctionManager {
         } else {
             tableRows[gridRowPos] = [];
         }
-    }
-
-    private undoLastDrawnLineForRectangle = (rect: GridRectangle) => {
-        let isLastLineHorizontal = rect.undoLineList.pop();
-        if (isLastLineHorizontal) {
-            rect.horizontalPointsSelected.pop();
-        } else {
-            rect.verticalPointsSelected.pop();
-        }
-        let boxStartPositionX = rect.startX + rect.width + this.canvas.offsetLeft;
-        let boxStartPositionY = rect.startY + rect.height + this.canvas.offsetTop;
-        this.rectangleCreationManager.resetBoxProperties(rect, rect.startX, rect.startY);
-        this.rectangleCreationManager.drawRectangleFromMouse(rect, boxStartPositionX, boxStartPositionY);
-        this.rectangleCreationManager.drawAllRectBorderLinesAndGridLines(this.rectangles);
     }
 
     private buildTableShape = (totalRows: number, totalCols: number): string[][] => {

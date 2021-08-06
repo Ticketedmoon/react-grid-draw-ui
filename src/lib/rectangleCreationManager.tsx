@@ -85,15 +85,6 @@ export class RectangleCreationManager {
         this.rectangles.splice(index, 1);
     }
 
-    drawAllRectBorderLinesAndGridLines = (rectangles: GridRectangle[]) => {
-        rectangles.forEach((rect: GridRectangle) => {
-            let boxStartPositionX = rect.startX + rect.width + this.canvas.offsetLeft;
-            let boxStartPositionY = rect.startY + rect.height + this.canvas.offsetTop;
-            this.drawRectangleFromMouse(rect, boxStartPositionX, boxStartPositionY);
-            this.drawRectGridLines(rect);
-        });
-    };
-
     drawRectGridLines(rect: GridRectangle) {
         rect.horizontalPointsSelected.forEach((line: HorizontalLineType) => {
             this.drawLineFromBoxBoundaryX(line);
