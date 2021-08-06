@@ -4,7 +4,7 @@ import { HorizontalLineType } from "../types/horizontal.line.type";
 import { VerticalLineType } from "../types/vertical.line.type";
 export declare class RectangleCreationManager {
     private readonly X_CHARACTER;
-    private readonly rectangles;
+    private rectangles;
     private ctx;
     private canvas;
     private readonly lineClickTolerance;
@@ -20,6 +20,7 @@ export declare class RectangleCreationManager {
     getRectangles(): GridRectangle[];
     addRectangle(rect: GridRectangle): void;
     removeRectangle(index: number): void;
+    clearDownGrids(): void;
     drawRectGridLines(rect: GridRectangle): void;
     drawSelectableCircleOnBoxBoundary: (mouseX: number, mouseY: number, colour: string) => void;
     drawLineFromBoxBoundaryX: (line: HorizontalLineType) => void;
