@@ -51,8 +51,7 @@ export class CanvasManager {
 		this.rectangleBoundaryValidator = new RectangleBoundaryValidator(this.canvas, this.lineProperties, this.rectangleCreationManager);
 		this.setUpMouseEvents();
 		this.setUpKeyboardEvents();
-		setCreationManagersForHook(new PublicFunctionManager(this.canvas, this.rectangleCreationManager.getRectangles(),
-			this.rectangleCreationManager));
+		setCreationManagersForHook(new PublicFunctionManager(this.canvas, this.rectangleCreationManager));
 	}
 
 	setCanvasSize = (containerWidth: number, containerHeight: number) => {

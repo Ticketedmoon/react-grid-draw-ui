@@ -11,12 +11,10 @@ export class PublicFunctionManager {
     private canvas: HTMLCanvasElement;
 
     private readonly rectangleCreationManager: RectangleCreationManager;
-    private readonly rectangles: GridRectangle[];
     private readonly canvasRect: DOMRect;
 
-    constructor(canvas: HTMLCanvasElement, rectangles: GridRectangle[], rectangleCreationManager: RectangleCreationManager) {
+    constructor(canvas: HTMLCanvasElement, rectangleCreationManager: RectangleCreationManager) {
         this.canvas = canvas;
-        this.rectangles = rectangles;
         this.rectangleCreationManager = rectangleCreationManager;
         this.canvasRect = this.canvas.getBoundingClientRect();
     }
@@ -27,7 +25,7 @@ export class PublicFunctionManager {
             throw "Could not find DOM element with ID: " + this.CANVAS_WRAP_ID;
         }
         let listOfTables: string[][][] = [];
-        this.rectangles.forEach((rect: GridRectangle) => {
+        this.rectangleCreationManager.getRectangles().forEach((rect: GridRectangle) => {
             RectangleManagerUtil.sortRectangleLines(rect);
             RectangleManagerUtil.addRectangleEndLines(rect);
             let tableRows: string[][] = this.buildTableShape(rect.horizontalPointsSelected.length, rect.verticalPointsSelected.length);
@@ -46,6 +44,11 @@ export class PublicFunctionManager {
             this.rectangleCreationManager.drawRectGridLines(rect);
             this.rectangleCreationManager.drawRemoveTableButton(rect);
         });
+    }
+
+    clearDownGrids = () => {
+        this.rectangleCreationManager.clearDownGrids();
+        this.rectangleCreationManager.resetBoxProperties({} as GridRectangle, 0, 0);
     }
 
     private buildTableRowsFromDrawnGrid(parentItem: Node, rect: GridRectangle, tableRows: string[][]) {

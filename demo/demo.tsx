@@ -7,7 +7,7 @@ const style = require("./style.module.css");
 
 const App: React.FunctionComponent = () => {
 
-	const [getGridData, undoLastRect, undoLastLine]: Function[] = useGridData();
+	const [getGridData, clearDownGrids, createGridsFromPayload]: Function[] = useGridData();
 
 	return (
 		<div className={style["application-container"]} onClick={() => Helper.buildTable(getGridData())}>
@@ -25,8 +25,7 @@ const App: React.FunctionComponent = () => {
 					</ul>
 				</div>
 				<div className={style["button-select-container"]}>
-					<button onClick={() => undoLastLine()}> Undo Last Line </button>
-					<button onClick={() => undoLastRect()}> Undo Last Rectangle </button>
+					<button onClick={() => clearDownGrids()}> Remove all grids </button>
 				</div>
 				<ReactGridDrawUI>
 					<div className={style["drawable-container"]} id={"container"}>

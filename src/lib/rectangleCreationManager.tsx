@@ -8,7 +8,7 @@ export class RectangleCreationManager {
 
     private readonly X_CHARACTER: string = "❎";
 
-    private readonly rectangles: GridRectangle[];
+    private rectangles: GridRectangle[];
     private ctx: CanvasRenderingContext2D;
     private canvas: HTMLCanvasElement;
 
@@ -83,6 +83,10 @@ export class RectangleCreationManager {
 
     removeRectangle(index: number) {
         this.rectangles.splice(index, 1);
+    }
+
+    clearDownGrids() {
+        this.rectangles = [];
     }
 
     drawRectGridLines(rect: GridRectangle) {
