@@ -6,8 +6,8 @@
 
 A sophisticated canvas-based drawing and grid-creation React component library.
 
-**Demo:** https://shanecreedon.github.io/React-grid-draw-ui/  
-**Demo Code:** https://github.com/ShaneCreedon/React-grid-draw-ui/tree/master/demo
+**Demo:** https://ticketedmoon.github.io/React-grid-draw-ui/  
+**Demo Code:** https://github.com/Ticketedmoon/React-grid-draw-ui/tree/master/demo
 
 **Why is this useful?**
 
